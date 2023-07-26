@@ -20,6 +20,7 @@ import threading
 from ._logger import create_logger
 
 from . import pump_protocol
+from .socket_bridge import SocketBridge
 
 #: Represents the Broadcast of the C3000
 from .dtprotocol import DTInstructionPacket
@@ -97,17 +98,12 @@ class PumpIO:
         timeout: The timeout of communication, default set to DEFAULT_IO_TIMEOUT(1)
 
     """
-    def __init__(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT):
+    def __init__(self):
         self.logger = create_logger(self.__class__.__name__)
 
         self.lock = threading.Lock()
 
-        self.port = port
-        self.baudrate = baudrate
-        self.timeout = timeout
-        self._serial = None  # type: Union[serial.serialposix.Serial, serial.serialwin32.Serial]
-
-        self.open(port, baudrate, timeout)
+        self._serial = None  # type: Union[serial.serialposix.Serial, serial.serialwin32.Serial, SocketBridge]
 
     @classmethod
     def from_config(cls, io_config: Dict) -> 'PumpIO':
@@ -123,19 +119,26 @@ class PumpIO:
             PumpIO: New PumpIO object with the variables set from the configuration file.
 
         """
-        port = io_config['port']
+        instance = cls()
 
-        if 'baudrate' in io_config:
-            baudrate = io_config['baudrate']
+        io_type = io_config.get('type', 'serial')
+
+        if io_type == 'serial':
+            port = io_config['port']
+            baudrate = io_config.get('baudrate', DEFAULT_IO_BAUDRATE)
+            timeout = io_config.get('timeout', DEFAULT_IO_TIMEOUT)
+            instance.open_serial(port, baudrate, timeout)
+
+        elif io_type == 'socket':
+            hostname = io_config['hostname']
+            port = io_config['port']
+            timeout = io_config.get('timeout', DEFAULT_IO_TIMEOUT)
+            instance.open_socket(hostname, port, timeout)
+
         else:
-            baudrate = DEFAULT_IO_BAUDRATE
+            raise ValueError(f'unknown I/O type: {io_type!r}')
 
-        if 'timeout' in io_config:
-            timeout = io_config['timeout']
-        else:
-            timeout = DEFAULT_IO_TIMEOUT
-
-        return cls(port, baudrate, timeout)
+        return instance
 
     @classmethod
     def from_configfile(cls, io_configfile: Union[str, Path]) -> 'PumpIO':
@@ -174,6 +177,20 @@ class PumpIO:
         """
         self.close()
 
+    def _debug_info(self) -> dict[str, Any]:
+        info = { }
+
+        if isinstance(self._serial, serial.Serial):
+            info['port'] = self._serial.port
+            info['baudrate'] = self._serial.baudrate
+            info['timeout'] = self._serial.timeout
+
+        if isinstance(self._serial, SocketBridge):
+            info['hostname'] = self._serial.hostname
+            info['port'] = self._serial.port
+
+        return info
+
     def open(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
         """
         Opens a communication with the hardware.
@@ -186,11 +203,38 @@ class PumpIO:
             timeout: The timeout of the communication, default set to DEFAULT_IO_TIMEOUT(1).
 
         """
+        self.open_serial(port, baudrate, timeout)  # backwards compatibility
+
+    def open_serial(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
+        """
+        Opens a communication with the hardware.
+
+        Args:
+            port: The port number on which the communication will take place.
+
+            baudrate: The baudrate of the communication, default set to DEFAULT_IO_BAUDRATE(9600).
+
+            timeout: The timeout of the communication, default set to DEFAULT_IO_TIMEOUT(1).
+
+        """
         self._serial = serial.Serial(port, baudrate, timeout=timeout)
-        self.logger.debug("Opening port '%s'", self.port,
-                          extra={'port': self.port,
-                                 'baudrate': self.baudrate,
-                                 'timeout': self.timeout})
+        self.logger.debug("Opening port '%s'", self._serial, extra=self._debug_info())
+
+    def open_socket(self, hostname: str, port: int, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
+        """
+        Opens a communication with the hardware over a network socket
+
+        Args:
+            hostname: The hostname with which the communication will take place.
+
+            port: The port number on which the communication will take place.
+
+            timeout: The timeout of the communication, default set to DEFAULT_IO_TIMEOUT(1).
+
+        """
+        self._serial = SocketBridge(timeout)
+        self._serial.open(hostname, port)
+        self.logger.debug("Opening port '%s'", self._serial, extra=self._debug_info())
 
     def close(self) -> None:
         """
@@ -201,10 +245,7 @@ class PumpIO:
             return
 
         self._serial.close()
-        self.logger.debug("Closing port '%s'", self.port,
-                          extra={'port': self.port,
-                                 'baudrate': self.baudrate,
-                                 'timeout': self.timeout})
+        self.logger.debug("Closing port '%s'", self._serial, extra=self._debug_info())
 
     def flush_input(self) -> None:
         """
