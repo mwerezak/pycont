@@ -89,21 +89,16 @@ MAX_REPEAT_OPERATION = 10
 class PumpIO:
     """
     This class deals with the pump I/O instructions.
-
-    Args:
-        port: The device name (depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.)
-
-        baudrate: Baudrate of the communication, default set to DEFAULT_IO_BAUDRATE(9600)
-
-        timeout: The timeout of communication, default set to DEFAULT_IO_TIMEOUT(1)
-
     """
+
+    _serial: Optional[Union[serial.serialposix.Serial, serial.serialwin32.Serial, SocketBridge]]
+
     def __init__(self):
         self.logger = create_logger(self.__class__.__name__)
 
         self.lock = threading.Lock()
 
-        self._serial = None  # type: Union[serial.serialposix.Serial, serial.serialwin32.Serial, SocketBridge]
+        self._serial = None
 
     @classmethod
     def from_config(cls, io_config: Dict) -> 'PumpIO':
@@ -114,6 +109,9 @@ class PumpIO:
             cls: The initialising class.
 
             io_config: Dictionary holding the configuration data.
+                port: The device name (depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.)
+                baudrate: Baudrate of the communication, default set to DEFAULT_IO_BAUDRATE(9600)
+                timeout: The timeout of communication, default set to DEFAULT_IO_TIMEOUT(1)
 
         Returns:
             PumpIO: New PumpIO object with the variables set from the configuration file.
@@ -702,6 +700,8 @@ class C3000Controller(object):
             max_range = MAX_TOP_VELOCITY_MICRO_STEP_MODE_0
         elif self.micro_step_mode == MICRO_STEP_MODE_2:
             max_range = MAX_TOP_VELOCITY_MICRO_STEP_MODE_2
+        else:
+            raise ValueError(f"invalid microstep mode: {self.micro_step_mode}")
 
         if top_velocity in range(1, max_range + 1):
             return True
