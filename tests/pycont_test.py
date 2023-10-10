@@ -12,7 +12,7 @@ import pycont.controller
 SETUP_CONFIG_FILE = './pump_setup_config.json'
 
 # and load the config file in a MultiPumpController
-controller = pycont.controller.MultiPumpController.from_configfile(SETUP_CONFIG_FILE)
+controller = pycont.controller.multipump.MultiPumpController.from_configfile(SETUP_CONFIG_FILE)
 
 # initialize the pumps in a smart way, if they are already initialized we do not want to reinitialize them because they got back to zero position
 controller.smart_initialize()

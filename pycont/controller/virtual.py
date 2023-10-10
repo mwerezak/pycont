@@ -7,7 +7,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .._logger import create_logger
-from . import PumpIO, C3000Controller, PumpIOTimeOutError, MultiPumpController
+from . import PumpIO, C3000Controller, PumpIOTimeOutError
+from .multipump import MultiPumpController
 
 from . import (
     DEFAULT_IO_TIMEOUT,
