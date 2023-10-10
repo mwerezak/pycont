@@ -25,6 +25,8 @@ from ..socket_bridge import SocketBridge
 #: Represents the Broadcast of the C3000
 from ..dtprotocol import DTInstructionPacket
 
+from .config import ValvePosition, Microstep, PumpConfig
+
 C3000Broadcast = '_'
 
 #: Switches the C3000 to a certain address
@@ -47,32 +49,6 @@ C3000SwitchToAddress = {
     'F': '@',
     'BROADCAST': C3000Broadcast,
 }
-
-#: Input for the valve
-VALVE_INPUT = 'I'
-#: Output for the valve
-VALVE_OUTPUT = 'O'
-#: Bypass for the valve
-VALVE_BYPASS = 'B'
-#: Extra for the valve
-VALVE_EXTRA = 'E'
-#: 6 way valve
-VALVE_6WAY_LIST = ['1', '2', '3', '4', '5', '6']
-
-#: Microstep Mode 0
-MICRO_STEP_MODE_0 = 0
-#: Microstep Mode 2
-MICRO_STEP_MODE_2 = 2
-
-#: Number of steps in Microstep Mode 0
-N_STEP_MICRO_STEP_MODE_0 = 3000
-#: Number of steps in Microstep Mode 2
-N_STEP_MICRO_STEP_MODE_2 = 24000
-
-#: The maximum top velocity for Microstep Mode 0
-MAX_TOP_VELOCITY_MICRO_STEP_MODE_0 = 6000
-#: The maximum top velocity for Microstep Mode 2
-MAX_TOP_VELOCITY_MICRO_STEP_MODE_2 = 48000
 
 #: default Input/Output (I/O) Baudrate
 DEFAULT_IO_BAUDRATE = 9600
@@ -354,7 +330,7 @@ class PumpHWError(Exception):
             print("** ERROR ** Unknown error")
 
 
-class C3000Controller(object):
+class C3000Controller:
     """
     This class represents the main controller for the C3000.
     The controller is what controls the pumps.
@@ -362,48 +338,39 @@ class C3000Controller(object):
     Args:
         pump_io: PumpIO object for communication.
 
-        name: The name of the controller.
-
-        address: Address of the controller.
-
-        total_volume: Total volume of the pump.
-
-        micro_step_mode: The mode which the microstep will use, default set to MICRO_STEP_MODE_2 (2)
-
-        top_velocity: The top velocity of the pump, default set to 6000
-
-        initialize_valve_position: Sets the valve position, default set to VALVE_INPUT ('I')
-
+        config: Pump configuration.
     Raises:
         ValueError: Invalid microstep mode.
 
     """
-    def __init__(self, pump_io: PumpIO, name: str, address: str, total_volume: float,
-                 micro_step_mode: int = MICRO_STEP_MODE_2, top_velocity: int = 6000,
-                 initialize_valve_position: str = VALVE_INPUT):
+    def __init__(self, pump_io: PumpIO, config: PumpConfig):
         self.logger = create_logger(self.__class__.__name__)
 
         self._io = pump_io
 
-        self.name = name
+        self.config = config
 
-        self.address = address
         self._protocol = pump_protocol.C3000Protocol(self.address)
 
-        self.initialize_valve_position = initialize_valve_position
+        self.micro_step_mode = config.micro_step_mode
+        self.total_volume = float(config.total_volume)  # in ml (float)
+        self.default_top_velocity = config.top_velocity
 
-        self.micro_step_mode = micro_step_mode
-        if self.micro_step_mode == MICRO_STEP_MODE_0:
-            self.number_of_steps = int(N_STEP_MICRO_STEP_MODE_0)  # float
-        elif self.micro_step_mode == MICRO_STEP_MODE_2:
-            self.number_of_steps = int(N_STEP_MICRO_STEP_MODE_2)  # float
-        else:
-            raise ValueError('Microstep mode {} is not handled'.format(self.micro_step_mode))
+    @property
+    def name(self) -> str:
+        return self.config.name
 
-        self.total_volume = float(total_volume)  # in ml (float)
-        self.steps_per_ml = int(self.number_of_steps / self.total_volume)
+    @property
+    def address(self) -> str:
+        return self.config.address
 
-        self.default_top_velocity = top_velocity
+    @property
+    def number_of_steps(self) -> int:
+        return self.micro_step_mode.number_of_steps()
+
+    @property
+    def steps_per_ml(self) -> int:
+        return int(self.number_of_steps / self.total_volume)
 
     @classmethod
     def from_config(cls, pump_io: PumpIO, pump_name: str, pump_config: Dict) -> 'C3000Controller':
@@ -429,7 +396,9 @@ class C3000Controller(object):
         pump_config['total_volume'] = float(pump_config['volume'])  # in ml (float)
         del(pump_config['volume'])
 
-        return cls(pump_io, pump_name, **pump_config)
+        config = PumpConfig(name = pump_name, **pump_config)
+
+        return cls(pump_io, config)
 
     def write_and_read_from_pump(self, packet: DTInstructionPacket, max_repeat: int = MAX_REPEAT_WRITE_AND_READ)\
             -> Tuple[str, str, str]:
@@ -566,7 +535,7 @@ class C3000Controller(object):
             self.initialize(valve_position, secure=secure)
         self.init_all_pump_parameters(secure=secure)
 
-    def initialize(self, valve_position: str = None, max_repeat: int = MAX_REPEAT_OPERATION, secure: bool = True) -> bool:
+    def initialize(self, valve_position: ValvePosition = None, max_repeat: int = MAX_REPEAT_OPERATION, secure: bool = True) -> bool:
         """
         Initialises the pump.
 
@@ -582,7 +551,7 @@ class C3000Controller(object):
 
         """
         if valve_position is None:
-            valve_position = self.initialize_valve_position
+            valve_position = self.config.initialize_valve_position
 
         for _ in range(max_repeat):
 
@@ -673,7 +642,7 @@ class C3000Controller(object):
         self.set_top_velocity(self.default_top_velocity, secure=secure)
         self.wait_until_idle()  # just in case, but should not be needed
 
-    def set_microstep_mode(self, micro_step_mode: int) -> None:
+    def set_microstep_mode(self, micro_step_mode: Microstep) -> None:
         """
         Sets the microstep mode to use.
 
@@ -681,7 +650,8 @@ class C3000Controller(object):
             micro_step_mode: Mode to use.
 
         """
-        self.write_and_read_from_pump(self._protocol.forge_microstep_mode_packet(micro_step_mode))
+        self.micro_step_mode = micro_step_mode
+        self.write_and_read_from_pump(self._protocol.forge_microstep_mode_packet(micro_step_mode.value))
 
     def check_top_velocity_within_range(self, top_velocity: int) -> bool:
         """
@@ -697,13 +667,7 @@ class C3000Controller(object):
             ValueError: Top velocity is out of range.
 
         """
-        if self.micro_step_mode == MICRO_STEP_MODE_0:
-            max_range = MAX_TOP_VELOCITY_MICRO_STEP_MODE_0
-        elif self.micro_step_mode == MICRO_STEP_MODE_2:
-            max_range = MAX_TOP_VELOCITY_MICRO_STEP_MODE_2
-        else:
-            raise ValueError(f"invalid microstep mode: {self.micro_step_mode}")
-
+        max_range = self.micro_step_mode.max_top_velocity()
         if top_velocity in range(1, max_range + 1):
             return True
         else:
@@ -862,7 +826,7 @@ class C3000Controller(object):
         steps = self.volume_to_step(volume_in_ml)
         return steps <= self.remaining_steps
 
-    def pump(self, volume_in_ml: float, from_valve: str = None, speed_in: int = None, wait: bool = False,
+    def pump(self, volume_in_ml: float, from_valve: ValvePosition = None, speed_in: int = None, wait: bool = False,
              secure: bool = True) -> bool:
         """
         Sends the signal to initiate the pump sequence.
@@ -923,7 +887,7 @@ class C3000Controller(object):
         steps = self.volume_to_step(volume_in_ml)
         return steps <= self.current_steps
 
-    def deliver(self, volume_in_ml: float, to_valve: str = None, speed_out: int = None, wait: bool = False,
+    def deliver(self, volume_in_ml: float, to_valve: ValvePosition = None, speed_out: int = None, wait: bool = False,
                 secure: bool = True) -> bool:
         """
         Delivers the volume payload.
@@ -966,7 +930,7 @@ class C3000Controller(object):
         else:
             return False
 
-    def transfer(self, volume_in_ml: float, from_valve: str, to_valve: str, speed_in: int = None,
+    def transfer(self, volume_in_ml: float, from_valve: ValvePosition, to_valve: ValvePosition, speed_in: int = None,
                  speed_out: int = None) -> None:
         """
         Transfers the desired volume in mL.
@@ -1074,7 +1038,7 @@ class C3000Controller(object):
         (_, _, raw_valve_position) = self.write_and_read_from_pump(valve_position_packet)
         return raw_valve_position
 
-    def get_valve_position(self, max_repeat: int = MAX_REPEAT_OPERATION) -> str:
+    def get_valve_position(self, max_repeat: int = MAX_REPEAT_OPERATION) -> ValvePosition:
         """
         Gets the position of the valve.
 
@@ -1091,20 +1055,13 @@ class C3000Controller(object):
         raw_valve_position = None
         for i in range(max_repeat):
             raw_valve_position = self.get_raw_valve_position()
-            if raw_valve_position == 'i':
-                return VALVE_INPUT
-            elif raw_valve_position == 'o':
-                return VALVE_OUTPUT
-            elif raw_valve_position == 'b':
-                return VALVE_BYPASS
-            elif raw_valve_position == 'e':
-                return VALVE_EXTRA
-            elif raw_valve_position in VALVE_6WAY_LIST:
-                return raw_valve_position
+            valve_position = ValvePosition.try_decode(raw_valve_position)
+            if valve_position is not None:
+                return valve_position
             self.logger.debug(f"Valve position request failed attempt {i+1}/{max_repeat}, {raw_valve_position} unknown")
         raise ValueError(f'Valve position received was {raw_valve_position}. It is unknown')
 
-    def set_valve_position(self, valve_position: str, max_repeat: int = MAX_REPEAT_OPERATION, secure: bool = True) -> bool:
+    def set_valve_position(self, valve_position: ValvePosition, max_repeat: int = MAX_REPEAT_OPERATION, secure: bool = True) -> bool:
         """
         Sets the position of the valve.
 
@@ -1131,16 +1088,16 @@ class C3000Controller(object):
             else:
                 self.logger.debug("Valve not in position, change attempt {}/{}".format(i + 1, max_repeat))
 
-            if valve_position == VALVE_INPUT:
+            if valve_position == ValvePosition.Input:
                 valve_position_packet = self._protocol.forge_valve_input_packet()
-            elif valve_position == VALVE_OUTPUT:
+            elif valve_position == ValvePosition.Output:
                 valve_position_packet = self._protocol.forge_valve_output_packet()
-            elif valve_position == VALVE_BYPASS:
+            elif valve_position == ValvePosition.Bypass:
                 valve_position_packet = self._protocol.forge_valve_bypass_packet()
-            elif valve_position == VALVE_EXTRA:
+            elif valve_position == ValvePosition.Extra:
                 valve_position_packet = self._protocol.forge_valve_extra_packet()
-            elif valve_position in VALVE_6WAY_LIST:
-                valve_position_packet = self._protocol.forge_valve_6way_packet(valve_position)
+            elif valve_position.is_6way():
+                valve_position_packet = self._protocol.forge_valve_6way_packet(valve_position.value)
             else:
                 raise ValueError('Valve position {} unknown'.format(valve_position))
 

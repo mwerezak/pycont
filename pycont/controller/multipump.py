@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 from .._logger import create_logger
 from . import PumpIO, C3000Controller
+from .config import ValvePosition
 
 if TYPE_CHECKING:
     from typing import Any, Union, Optional
@@ -239,7 +240,7 @@ class MultiPumpController(object):
 
         for pump in list(self.pumps.values()):
             if not pump.is_initialized():
-                pump.set_valve_position(pump.initialize_valve_position, secure=secure)
+                pump.set_valve_position(pump.config.initialize_valve_position, secure=secure)
         self.wait_until_all_pumps_idle()
 
         for pump in list(self.pumps.values()):
@@ -392,7 +393,7 @@ class MultiPumpController(object):
         if remaining_volume_to_transfer > 0:
             self.transfer(pump_names, remaining_volume_to_transfer, from_valve, to_valve, speed_in, speed_out)
 
-    def parallel_transfer(self, pumps_and_volumes_dict: dict, from_valve: str, to_valve: str,
+    def parallel_transfer(self, pumps_and_volumes_dict: dict, from_valve: ValvePosition, to_valve: ValvePosition,
                           speed_in: int = None, speed_out: int = None, secure: bool = True, wait: bool = False) -> bool:
         """
         Transfers the desired volume between pumps.
