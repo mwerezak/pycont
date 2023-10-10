@@ -44,7 +44,6 @@ C3000SwitchToAddress = {
     'C': '=',
     'D': '>',
     'E': '?',
-    'F': '@',
     'BROADCAST': C3000Broadcast,
 }
 
