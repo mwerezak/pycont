@@ -166,20 +166,6 @@ class PumpIO:
 
         return info
 
-    def open(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
-        """
-        Opens a communication with the hardware.
-
-        Args:
-            port: The port number on which the communication will take place.
-
-            baudrate: The baudrate of the communication, default set to DEFAULT_IO_BAUDRATE(9600).
-
-            timeout: The timeout of the communication, default set to DEFAULT_IO_TIMEOUT(1).
-
-        """
-        self.open_serial(port, baudrate, timeout)
-
     def open_serial(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
         """
         Opens a communication with the hardware.
@@ -216,16 +202,24 @@ class PumpIO:
         Closes the communication with the hardware.
         """
         # This happens when serial.Serial fails in PumpIO.open(), so that PumpIO._serial is None.
-        if self._serial is None:
-            return
+        # Or if the PumpIO never opened a connection.
+        if self._serial is not None:
+            self._serial.close()
+            self.logger.debug("Closing port '%s'", self._serial, extra=self._debug_info())
+            self._serial = None
 
-        self._serial.close()
-        self.logger.debug("Closing port '%s'", self._serial, extra=self._debug_info())
+    def is_connected(self) -> bool:
+        return self._serial is not None
+
+    def __bool__(self) -> bool:
+        return self.is_connected()
 
     def flush_input(self) -> None:
         """
         Flushes the input buffer of the serial communication.
         """
+        if self._serial is None:
+            raise RuntimeError('no open connection')
         self._serial.reset_input_buffer()
 
     def write(self, packet: DTInstructionPacket) -> None:
@@ -238,6 +232,9 @@ class PumpIO:
         .. note:: Unsure if this is the correct packet type (GAK).
 
         """
+        if self._serial is None:
+            raise RuntimeError('no open connection')
+
         str_to_send = packet.to_string()
         self.logger.debug("Sending {!r}".format(str_to_send))
         self._serial.write(str_to_send)
@@ -250,6 +247,9 @@ class PumpIO:
             PumpIOTimeOutError: If the response time is greater than the timeout threshold.
 
         """
+        if self._serial is None:
+            raise RuntimeError('no open connection')
+
         msg = self._serial.readline()
         if msg:
             self.logger.debug("Received {}".format(msg))
