@@ -78,8 +78,8 @@ Please see the <a class="reference internal" href="examples.html#examples-label"
 </dd></dl>
 
 <dl class="class">
-<dt id="pycont.controller.C3000Controller">
-<em class="property">class </em><code class="descclassname">pycont.controller.</code><code class="descname">C3000Controller</code><span class="sig-paren">(</span><em>pump_io</em>, <em>name</em>, <em>address</em>, <em>total_volume</em>, <em>micro_step_mode=2</em>, <em>top_velocity=6000</em>, <em>initialize_valve_position='I'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController">
+<em class="property">class </em><code class="descclassname">pycont.controller.</code><code class="descname">PumpController</code><span class="sig-paren">(</span><em>pump_io</em>, <em>name</em>, <em>address</em>, <em>total_volume</em>, <em>micro_step_mode=2</em>, <em>top_velocity=6000</em>, <em>initialize_valve_position='I'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>This class represents thhe main controller for the C3000.
 The controller is what controls the pumps.</p>
@@ -97,8 +97,8 @@ The controller is what controls the pumps.</p>
 <dd>ValueError: Invalid microstep mode.</dd>
 </dl>
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.check_top_velocity_within_range">
-<code class="descname">check_top_velocity_within_range</code><span class="sig-paren">(</span><em>top_velocity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.check_top_velocity_within_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.check_top_velocity_within_range" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.check_top_velocity_within_range">
+<code class="descname">check_top_velocity_within_range</code><span class="sig-paren">(</span><em>top_velocity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.check_top_velocity_within_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.check_top_velocity_within_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks that the top velocity is within a maximum range.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -111,14 +111,14 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pycont.controller.C3000Controller.current_steps">
-<code class="descname">current_steps</code><a class="headerlink" href="#pycont.controller.C3000Controller.current_steps" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.current_steps">
+<code class="descname">current_steps</code><a class="headerlink" href="#pycont.controller.PumpController.current_steps" title="Permalink to this definition">¶</a></dt>
 <dd><p>See get_plunger_position()</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pycont.controller.C3000Controller.current_volume">
-<code class="descname">current_volume</code><a class="headerlink" href="#pycont.controller.C3000Controller.current_volume" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.current_volume">
+<code class="descname">current_volume</code><a class="headerlink" href="#pycont.controller.PumpController.current_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>See get_volume()</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -127,8 +127,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.deliver">
-<code class="descname">deliver</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>to_valve=None</em>, <em>speed_out=None</em>, <em>wait=False</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.deliver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.deliver" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.deliver">
+<code class="descname">deliver</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>to_valve=None</em>, <em>speed_out=None</em>, <em>wait=False</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.deliver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.deliver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delivers the volume payload.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -146,8 +146,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.ensure_default_top_velocity">
-<code class="descname">ensure_default_top_velocity</code><span class="sig-paren">(</span><em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.ensure_default_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.ensure_default_top_velocity" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.ensure_default_top_velocity">
+<code class="descname">ensure_default_top_velocity</code><span class="sig-paren">(</span><em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.ensure_default_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.ensure_default_top_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ensures that the top velocity is the default top velocity.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -156,32 +156,32 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.flash_eeprom_3_way_t_valve">
-<code class="descname">flash_eeprom_3_way_t_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.flash_eeprom_3_way_t_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.flash_eeprom_3_way_t_valve" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.flash_eeprom_3_way_t_valve">
+<code class="descname">flash_eeprom_3_way_t_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.flash_eeprom_3_way_t_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.flash_eeprom_3_way_t_valve" title="Permalink to this definition">¶</a></dt>
 <dd><p>See set_eeprom_config()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.flash_eeprom_3_way_y_valve">
-<code class="descname">flash_eeprom_3_way_y_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.flash_eeprom_3_way_y_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.flash_eeprom_3_way_y_valve" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.flash_eeprom_3_way_y_valve">
+<code class="descname">flash_eeprom_3_way_y_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.flash_eeprom_3_way_y_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.flash_eeprom_3_way_y_valve" title="Permalink to this definition">¶</a></dt>
 <dd><p>See set_eeprom_config()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.flash_eeprom_4_way_dist_valve">
-<code class="descname">flash_eeprom_4_way_dist_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.flash_eeprom_4_way_dist_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.flash_eeprom_4_way_dist_valve" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.flash_eeprom_4_way_dist_valve">
+<code class="descname">flash_eeprom_4_way_dist_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.flash_eeprom_4_way_dist_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.flash_eeprom_4_way_dist_valve" title="Permalink to this definition">¶</a></dt>
 <dd><p>See set_eeprom_config()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.flash_eeprom_4_way_nondist_valve">
-<code class="descname">flash_eeprom_4_way_nondist_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.flash_eeprom_4_way_nondist_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.flash_eeprom_4_way_nondist_valve" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.flash_eeprom_4_way_nondist_valve">
+<code class="descname">flash_eeprom_4_way_nondist_valve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.flash_eeprom_4_way_nondist_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.flash_eeprom_4_way_nondist_valve" title="Permalink to this definition">¶</a></dt>
 <dd><p>See set_eeprom_config()</p>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="pycont.controller.C3000Controller.from_config">
-<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>pump_io</em>, <em>pump_name</em>, <em>pump_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.from_config" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.from_config">
+<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>pump_io</em>, <em>pump_name</em>, <em>pump_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.from_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtains the configuration data.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -191,13 +191,13 @@ The controller is what controls the pumps.</p>
 <p class="last">pump_config (Dict): Dictionary containg the pump configurattion data.</p>
 </dd>
 <dt>Returns:</dt>
-<dd>C3000Controller: New C3000Controller object with the data set from the configuration.</dd>
+<dd>PumpController: New PumpController object with the data set from the configuration.</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.get_default_top_velocity">
-<code class="descname">get_default_top_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.get_default_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.get_default_top_velocity" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.get_default_top_velocity">
+<code class="descname">get_default_top_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.get_default_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.get_default_top_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the default top velocity.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -206,8 +206,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.get_eeprom_config">
-<code class="descname">get_eeprom_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.get_eeprom_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.get_eeprom_config" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.get_eeprom_config">
+<code class="descname">get_eeprom_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.get_eeprom_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.get_eeprom_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the EEPROM configuration.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -216,8 +216,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.get_plunger_position">
-<code class="descname">get_plunger_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.get_plunger_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.get_plunger_position" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.get_plunger_position">
+<code class="descname">get_plunger_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.get_plunger_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.get_plunger_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the current position of the plunger.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -226,8 +226,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.get_raw_valve_position">
-<code class="descname">get_raw_valve_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.get_raw_valve_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.get_raw_valve_position" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.get_raw_valve_position">
+<code class="descname">get_raw_valve_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.get_raw_valve_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.get_raw_valve_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the raw value of the valve&#8217;s position.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -236,8 +236,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.get_top_velocity">
-<code class="descname">get_top_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.get_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.get_top_velocity" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.get_top_velocity">
+<code class="descname">get_top_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.get_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.get_top_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the current top velocity.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -246,8 +246,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.get_valve_position">
-<code class="descname">get_valve_position</code><span class="sig-paren">(</span><em>max_repeat=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.get_valve_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.get_valve_position" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.get_valve_position">
+<code class="descname">get_valve_position</code><span class="sig-paren">(</span><em>max_repeat=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.get_valve_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.get_valve_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the position of the valve.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -260,8 +260,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.get_volume">
-<code class="descname">get_volume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.get_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.get_volume" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.get_volume">
+<code class="descname">get_volume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.get_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.get_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>See step_to_volume()</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -270,8 +270,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.go_to_max_volume">
-<code class="descname">go_to_max_volume</code><span class="sig-paren">(</span><em>speed=None</em>, <em>wait=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.go_to_max_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.go_to_max_volume" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.go_to_max_volume">
+<code class="descname">go_to_max_volume</code><span class="sig-paren">(</span><em>speed=None</em>, <em>wait=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.go_to_max_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.go_to_max_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Moves the pump to the maximum volume.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -286,8 +286,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.go_to_volume">
-<code class="descname">go_to_volume</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>speed=None</em>, <em>wait=False</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.go_to_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.go_to_volume" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.go_to_volume">
+<code class="descname">go_to_volume</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>speed=None</em>, <em>wait=False</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.go_to_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.go_to_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Moves the pump to the desired volume.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -308,8 +308,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.init_all_pump_parameters">
-<code class="descname">init_all_pump_parameters</code><span class="sig-paren">(</span><em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.init_all_pump_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.init_all_pump_parameters" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.init_all_pump_parameters">
+<code class="descname">init_all_pump_parameters</code><span class="sig-paren">(</span><em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.init_all_pump_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.init_all_pump_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialises the pump parameters, Microstep Mode, and Top Velocity.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -318,8 +318,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.initialize">
-<code class="descname">initialize</code><span class="sig-paren">(</span><em>valve_position=None</em>, <em>max_repeat=10</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.initialize" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>valve_position=None</em>, <em>max_repeat=10</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialises the pump.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -333,8 +333,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.initialize_no_valve">
-<code class="descname">initialize_no_valve</code><span class="sig-paren">(</span><em>operand_value=0</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.initialize_no_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.initialize_no_valve" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.initialize_no_valve">
+<code class="descname">initialize_no_valve</code><span class="sig-paren">(</span><em>operand_value=0</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.initialize_no_valve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.initialize_no_valve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialise with no valves.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -345,8 +345,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.initialize_valve_left">
-<code class="descname">initialize_valve_left</code><span class="sig-paren">(</span><em>operand_value=0</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.initialize_valve_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.initialize_valve_left" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.initialize_valve_left">
+<code class="descname">initialize_valve_left</code><span class="sig-paren">(</span><em>operand_value=0</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.initialize_valve_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.initialize_valve_left" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialises the left valve.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -357,8 +357,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.initialize_valve_only">
-<code class="descname">initialize_valve_only</code><span class="sig-paren">(</span><em>operand_string='0</em>, <em>0'</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.initialize_valve_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.initialize_valve_only" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.initialize_valve_only">
+<code class="descname">initialize_valve_only</code><span class="sig-paren">(</span><em>operand_string='0</em>, <em>0'</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.initialize_valve_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.initialize_valve_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialise with valves only.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -369,8 +369,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.initialize_valve_right">
-<code class="descname">initialize_valve_right</code><span class="sig-paren">(</span><em>operand_value=0</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.initialize_valve_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.initialize_valve_right" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.initialize_valve_right">
+<code class="descname">initialize_valve_right</code><span class="sig-paren">(</span><em>operand_value=0</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.initialize_valve_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.initialize_valve_right" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialises the right valve.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -381,8 +381,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.is_busy">
-<code class="descname">is_busy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.is_busy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.is_busy" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.is_busy">
+<code class="descname">is_busy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.is_busy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.is_busy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if the pump is busy.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -395,8 +395,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.is_idle">
-<code class="descname">is_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.is_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.is_idle" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.is_idle">
+<code class="descname">is_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.is_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.is_idle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if the pump is idle or Busy</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -409,8 +409,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.is_initialized">
-<code class="descname">is_initialized</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.is_initialized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.is_initialized" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.is_initialized">
+<code class="descname">is_initialized</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.is_initialized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.is_initialized" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if the pump has been initialised.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -421,8 +421,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.is_volume_deliverable">
-<code class="descname">is_volume_deliverable</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.is_volume_deliverable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.is_volume_deliverable" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.is_volume_deliverable">
+<code class="descname">is_volume_deliverable</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.is_volume_deliverable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.is_volume_deliverable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if the supplied volume is deliverable.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -435,8 +435,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.is_volume_pumpable">
-<code class="descname">is_volume_pumpable</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.is_volume_pumpable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.is_volume_pumpable" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.is_volume_pumpable">
+<code class="descname">is_volume_pumpable</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.is_volume_pumpable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.is_volume_pumpable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if the volume is pumpable.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -449,8 +449,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.is_volume_valid">
-<code class="descname">is_volume_valid</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.is_volume_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.is_volume_valid" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.is_volume_valid">
+<code class="descname">is_volume_valid</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.is_volume_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.is_volume_valid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if the supplied volume is valid.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -463,8 +463,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.pump">
-<code class="descname">pump</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>from_valve=None</em>, <em>speed_in=None</em>, <em>wait=False</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.pump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.pump" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.pump">
+<code class="descname">pump</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>from_valve=None</em>, <em>speed_in=None</em>, <em>wait=False</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.pump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.pump" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends the signal to initiate the pump sequence.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -486,8 +486,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pycont.controller.C3000Controller.remaining_steps">
-<code class="descname">remaining_steps</code><a class="headerlink" href="#pycont.controller.C3000Controller.remaining_steps" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.remaining_steps">
+<code class="descname">remaining_steps</code><a class="headerlink" href="#pycont.controller.PumpController.remaining_steps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the remaining number of steps.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -496,8 +496,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pycont.controller.C3000Controller.remaining_volume">
-<code class="descname">remaining_volume</code><a class="headerlink" href="#pycont.controller.C3000Controller.remaining_volume" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.remaining_volume">
+<code class="descname">remaining_volume</code><a class="headerlink" href="#pycont.controller.PumpController.remaining_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the remaining volume.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -506,8 +506,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.set_default_top_velocity">
-<code class="descname">set_default_top_velocity</code><span class="sig-paren">(</span><em>top_velocity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.set_default_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.set_default_top_velocity" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.set_default_top_velocity">
+<code class="descname">set_default_top_velocity</code><span class="sig-paren">(</span><em>top_velocity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.set_default_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.set_default_top_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the default top velocity.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -516,8 +516,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.set_eeprom_config">
-<code class="descname">set_eeprom_config</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.set_eeprom_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.set_eeprom_config" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.set_eeprom_config">
+<code class="descname">set_eeprom_config</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.set_eeprom_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.set_eeprom_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the configuration of the EEPROM on the pumps.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -526,8 +526,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.set_microstep_mode">
-<code class="descname">set_microstep_mode</code><span class="sig-paren">(</span><em>micro_step_mode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.set_microstep_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.set_microstep_mode" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.set_microstep_mode">
+<code class="descname">set_microstep_mode</code><span class="sig-paren">(</span><em>micro_step_mode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.set_microstep_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.set_microstep_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the Microstep Mode to use.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -538,8 +538,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.set_top_velocity">
-<code class="descname">set_top_velocity</code><span class="sig-paren">(</span><em>top_velocity</em>, <em>max_repeat=10</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.set_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.set_top_velocity" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.set_top_velocity">
+<code class="descname">set_top_velocity</code><span class="sig-paren">(</span><em>top_velocity</em>, <em>max_repeat=10</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.set_top_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.set_top_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the top velocity for the pump.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -557,8 +557,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.set_valve_position">
-<code class="descname">set_valve_position</code><span class="sig-paren">(</span><em>valve_position</em>, <em>max_repeat=10</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.set_valve_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.set_valve_position" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.set_valve_position">
+<code class="descname">set_valve_position</code><span class="sig-paren">(</span><em>valve_position</em>, <em>max_repeat=10</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.set_valve_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.set_valve_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the position of the valve.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -576,8 +576,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.smart_initialize">
-<code class="descname">smart_initialize</code><span class="sig-paren">(</span><em>valve_position=None</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.smart_initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.smart_initialize" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.smart_initialize">
+<code class="descname">smart_initialize</code><span class="sig-paren">(</span><em>valve_position=None</em>, <em>secure=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.smart_initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.smart_initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialises the pump and sets all pump parammeters.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -588,8 +588,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.step_to_volume">
-<code class="descname">step_to_volume</code><span class="sig-paren">(</span><em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.step_to_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.step_to_volume" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.step_to_volume">
+<code class="descname">step_to_volume</code><span class="sig-paren">(</span><em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.step_to_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.step_to_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines the volume in a specific step.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -600,8 +600,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.transfer">
-<code class="descname">transfer</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>from_valve</em>, <em>to_valve</em>, <em>speed_in=None</em>, <em>speed_out=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.transfer" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.transfer">
+<code class="descname">transfer</code><span class="sig-paren">(</span><em>volume_in_ml</em>, <em>from_valve</em>, <em>to_valve</em>, <em>speed_in=None</em>, <em>speed_out=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.transfer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transfers the desired volume in mL.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -615,8 +615,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.volume_to_step">
-<code class="descname">volume_to_step</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.volume_to_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.volume_to_step" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.volume_to_step">
+<code class="descname">volume_to_step</code><span class="sig-paren">(</span><em>volume_in_ml</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.volume_to_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.volume_to_step" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines the number of steps for a given volume.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -627,14 +627,14 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.wait_until_idle">
-<code class="descname">wait_until_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.wait_until_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.wait_until_idle" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.wait_until_idle">
+<code class="descname">wait_until_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.wait_until_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.wait_until_idle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Waits until the pump is not busy for WAIT_SLEEP_TIME, default set to 0.1</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.controller.C3000Controller.write_and_read_from_pump">
-<code class="descname">write_and_read_from_pump</code><span class="sig-paren">(</span><em>packet</em>, <em>max_repeat=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#C3000Controller.write_and_read_from_pump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.C3000Controller.write_and_read_from_pump" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.controller.PumpController.write_and_read_from_pump">
+<code class="descname">write_and_read_from_pump</code><span class="sig-paren">(</span><em>packet</em>, <em>max_repeat=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/controller.html#PumpController.write_and_read_from_pump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.controller.PumpController.write_and_read_from_pump" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes packets to and reads the response from the pump.</p>
 <dl class="docutils">
 <dt>Args:</dt>

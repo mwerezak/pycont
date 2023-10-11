@@ -326,7 +326,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="C3000Controller"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller">[docs]</a><span class="k">class</span> <span class="nc">C3000Controller</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController">[docs]</a><span class="k">class</span> <span class="nc">PumpController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents thhe main controller for the C3000.</span>
 <span class="sd">    The controller is what controls the pumps.</span>
@@ -376,7 +376,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">default_top_velocity</span> <span class="o">=</span> <span class="n">top_velocity</span>
 
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="C3000Controller.from_config"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.from_config">[docs]</a>    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">pump_io</span><span class="p">,</span> <span class="n">pump_name</span><span class="p">,</span> <span class="n">pump_config</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.from_config"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.from_config">[docs]</a>    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">pump_io</span><span class="p">,</span> <span class="n">pump_name</span><span class="p">,</span> <span class="n">pump_config</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtains the configuration data.</span>
 
@@ -390,7 +390,7 @@
 <span class="sd">            pump_config (Dict): Dictionary containg the pump configurattion data.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            C3000Controller: New C3000Controller object with the data set from the configuration.</span>
+<span class="sd">            PumpController: New PumpController object with the data set from the configuration.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pump_config</span><span class="p">[</span><span class="s">&#39;address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">C3000SwitchToAddress</span><span class="p">[</span><span class="n">pump_config</span><span class="p">[</span><span class="s">&#39;switch&#39;</span><span class="p">]]</span>
@@ -402,7 +402,7 @@
         <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">pump_io</span><span class="p">,</span> <span class="n">pump_name</span><span class="p">,</span> <span class="o">**</span><span class="n">pump_config</span><span class="p">)</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.write_and_read_from_pump"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.write_and_read_from_pump">[docs]</a>    <span class="k">def</span> <span class="nf">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_WRITE_AND_READ</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.write_and_read_from_pump"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.write_and_read_from_pump">[docs]</a>    <span class="k">def</span> <span class="nf">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_WRITE_AND_READ</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes packets to and reads the response from the pump.</span>
 
@@ -435,7 +435,7 @@
         <span class="k">raise</span> <span class="n">ControllerRepeatedError</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.volume_to_step"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.volume_to_step">[docs]</a>    <span class="k">def</span> <span class="nf">volume_to_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.volume_to_step"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.volume_to_step">[docs]</a>    <span class="k">def</span> <span class="nf">volume_to_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines the number of steps for a given volume.</span>
 
@@ -448,7 +448,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">volume_in_ml</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_per_ml</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="C3000Controller.step_to_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.step_to_volume">[docs]</a>    <span class="k">def</span> <span class="nf">step_to_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.step_to_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.step_to_volume">[docs]</a>    <span class="k">def</span> <span class="nf">step_to_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines the volume in a specific step.</span>
 
@@ -462,7 +462,7 @@
         <span class="k">return</span> <span class="n">step</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_per_ml</span><span class="p">)</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.is_idle"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.is_idle">[docs]</a>    <span class="k">def</span> <span class="nf">is_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.is_idle"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.is_idle">[docs]</a>    <span class="k">def</span> <span class="nf">is_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the pump is idle or Busy</span>
 
@@ -484,7 +484,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;The pump replied status {}, Not handled&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="C3000Controller.is_busy"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.is_busy">[docs]</a>    <span class="k">def</span> <span class="nf">is_busy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.is_busy"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.is_busy">[docs]</a>    <span class="k">def</span> <span class="nf">is_busy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the pump is busy.</span>
 
@@ -499,7 +499,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_idle</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="C3000Controller.wait_until_idle"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.wait_until_idle">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.wait_until_idle"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.wait_until_idle">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Waits until the pump is not busy for WAIT_SLEEP_TIME, default set to 0.1</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -507,7 +507,7 @@
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">WAIT_SLEEP_TIME</span><span class="p">)</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.is_initialized"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.is_initialized">[docs]</a>    <span class="k">def</span> <span class="nf">is_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.is_initialized"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.is_initialized">[docs]</a>    <span class="k">def</span> <span class="nf">is_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the pump has been initialised.</span>
 
@@ -521,7 +521,7 @@
         <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">init_status</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">initialized_packet</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">init_status</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="C3000Controller.smart_initialize"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.smart_initialize">[docs]</a>    <span class="k">def</span> <span class="nf">smart_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_position</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.smart_initialize"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.smart_initialize">[docs]</a>    <span class="k">def</span> <span class="nf">smart_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_position</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialises the pump and sets all pump parammeters.</span>
 
@@ -535,7 +535,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">valve_position</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_all_pump_parameters</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.initialize"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_position</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.initialize"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_position</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialises the pump.</span>
 
@@ -565,7 +565,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Too many failed attempts to initialize!&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">ControllerRepeatedError</span></div>
 
-<div class="viewcode-block" id="C3000Controller.initialize_valve_right"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.initialize_valve_right">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_valve_right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.initialize_valve_right"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.initialize_valve_right">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_valve_right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialises the right valve.</span>
 
@@ -579,7 +579,7 @@
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="C3000Controller.initialize_valve_left"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.initialize_valve_left">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_valve_left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.initialize_valve_left"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.initialize_valve_left">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_valve_left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialises the left valve.</span>
 
@@ -593,7 +593,7 @@
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="C3000Controller.initialize_no_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.initialize_no_valve">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_no_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.initialize_no_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.initialize_no_valve">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_no_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialise with no valves.</span>
 
@@ -607,7 +607,7 @@
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="C3000Controller.initialize_valve_only"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.initialize_valve_only">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_valve_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_string</span><span class="o">=</span><span class="s">&#39;0,0&#39;</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.initialize_valve_only"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.initialize_valve_only">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_valve_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_string</span><span class="o">=</span><span class="s">&#39;0,0&#39;</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialise with valves only.</span>
 
@@ -622,7 +622,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.init_all_pump_parameters"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.init_all_pump_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">init_all_pump_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.init_all_pump_parameters"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.init_all_pump_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">init_all_pump_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialises the pump parameters, Microstep Mode, and Top Velocity.</span>
 
@@ -637,7 +637,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span>  <span class="c"># just in case, but should not be needed</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.set_microstep_mode"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.set_microstep_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_microstep_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">micro_step_mode</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.set_microstep_mode"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.set_microstep_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_microstep_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">micro_step_mode</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the Microstep Mode to use.</span>
 
@@ -654,7 +654,7 @@
             <span class="k">raise</span> <span class="n">ControllerInitError</span><span class="p">(</span><span class="s">&#39;Pump should be initialized before set_microstep_mode&#39;</span><span class="p">)</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.check_top_velocity_within_range"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.check_top_velocity_within_range">[docs]</a>    <span class="k">def</span> <span class="nf">check_top_velocity_within_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.check_top_velocity_within_range"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.check_top_velocity_within_range">[docs]</a>    <span class="k">def</span> <span class="nf">check_top_velocity_within_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks that the top velocity is within a maximum range.</span>
 
@@ -678,7 +678,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Top velocity {} is not in range&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">top_velocity</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="C3000Controller.set_default_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.set_default_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.set_default_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.set_default_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the default top velocity.</span>
 
@@ -689,7 +689,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">check_top_velocity_within_range</span><span class="p">(</span><span class="n">top_velocity</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_top_velocity</span> <span class="o">=</span> <span class="n">top_velocity</span></div>
 
-<div class="viewcode-block" id="C3000Controller.get_default_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.get_default_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.get_default_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_default_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the default top velocity.</span>
 
@@ -699,7 +699,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_top_velocity</span></div>
 
-<div class="viewcode-block" id="C3000Controller.ensure_default_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.ensure_default_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_default_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.ensure_default_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.ensure_default_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_default_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures that the top velocity is the default top velocity.</span>
 
@@ -710,7 +710,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_top_velocity</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_top_velocity</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_top_velocity</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.set_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.set_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">set_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.set_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.set_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">set_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the top velocity for the pump.</span>
 
@@ -747,7 +747,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ControllerInitError</span><span class="p">(</span><span class="s">&#39;Pump should be initialized before set_top_velocity&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.get_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.get_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.get_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the current top velocity.</span>
 
@@ -760,7 +760,7 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">top_velocity</span><span class="p">)</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.get_plunger_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.get_plunger_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_plunger_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.get_plunger_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_plunger_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_plunger_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the current position of the plunger.</span>
 
@@ -790,7 +790,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_steps</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_steps</span>
 
-<div class="viewcode-block" id="C3000Controller.get_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.get_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.get_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See step_to_volume()</span>
 
@@ -822,7 +822,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_volume</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.is_volume_pumpable"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.is_volume_pumpable">[docs]</a>    <span class="k">def</span> <span class="nf">is_volume_pumpable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.is_volume_pumpable"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.is_volume_pumpable">[docs]</a>    <span class="k">def</span> <span class="nf">is_volume_pumpable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the volume is pumpable.</span>
 
@@ -838,7 +838,7 @@
         <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_to_step</span><span class="p">(</span><span class="n">volume_in_ml</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">steps</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remaining_steps</span></div>
 
-<div class="viewcode-block" id="C3000Controller.pump"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.pump">[docs]</a>    <span class="k">def</span> <span class="nf">pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">from_valve</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">speed_in</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.pump"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.pump">[docs]</a>    <span class="k">def</span> <span class="nf">pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">from_valve</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">speed_in</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends the signal to initiate the pump sequence.</span>
 
@@ -883,7 +883,7 @@
             <span class="k">return</span> <span class="k">False</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.is_volume_deliverable"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.is_volume_deliverable">[docs]</a>    <span class="k">def</span> <span class="nf">is_volume_deliverable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.is_volume_deliverable"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.is_volume_deliverable">[docs]</a>    <span class="k">def</span> <span class="nf">is_volume_deliverable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the supplied volume is deliverable.</span>
 
@@ -899,7 +899,7 @@
         <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_to_step</span><span class="p">(</span><span class="n">volume_in_ml</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">steps</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_steps</span></div>
 
-<div class="viewcode-block" id="C3000Controller.deliver"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.deliver">[docs]</a>    <span class="k">def</span> <span class="nf">deliver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">to_valve</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">speed_out</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.deliver"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.deliver">[docs]</a>    <span class="k">def</span> <span class="nf">deliver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">to_valve</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">speed_out</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delivers the volume payload.</span>
 
@@ -939,7 +939,7 @@
             <span class="k">return</span> <span class="k">False</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.transfer"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.transfer">[docs]</a>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">from_valve</span><span class="p">,</span> <span class="n">to_valve</span><span class="p">,</span> <span class="n">speed_in</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">speed_out</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.transfer"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.transfer">[docs]</a>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">from_valve</span><span class="p">,</span> <span class="n">to_valve</span><span class="p">,</span> <span class="n">speed_in</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">speed_out</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transfers the desired volume in mL.</span>
 
@@ -964,7 +964,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span><span class="n">remaining_volume_to_transfer</span><span class="p">,</span> <span class="n">from_valve</span><span class="p">,</span> <span class="n">to_valve</span><span class="p">,</span> <span class="n">speed_in</span><span class="p">,</span> <span class="n">speed_out</span><span class="p">)</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="C3000Controller.is_volume_valid"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.is_volume_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_volume_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.is_volume_valid"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.is_volume_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_volume_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the supplied volume is valid.</span>
 
@@ -979,7 +979,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">volume_in_ml</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_volume</span></div>
 
-<div class="viewcode-block" id="C3000Controller.go_to_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.go_to_volume">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.go_to_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.go_to_volume">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume_in_ml</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves the pump to the desired volume.</span>
 
@@ -1018,7 +1018,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">False</span></div>
 
-<div class="viewcode-block" id="C3000Controller.go_to_max_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.go_to_max_volume">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_max_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.go_to_max_volume"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.go_to_max_volume">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_max_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves the pump to the maximum volume.</span>
 
@@ -1036,7 +1036,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">go_to_volume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_volume</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="n">speed</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span></div>
 
     <span class="c"># valve</span>
-<div class="viewcode-block" id="C3000Controller.get_raw_valve_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.get_raw_valve_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_valve_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.get_raw_valve_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_raw_valve_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_valve_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the raw value of the valve&#39;s position.</span>
 
@@ -1048,7 +1048,7 @@
         <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">raw_valve_position</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">valve_position_packet</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">raw_valve_position</span></div>
 
-<div class="viewcode-block" id="C3000Controller.get_valve_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.get_valve_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_valve_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.get_valve_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_valve_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_valve_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the position of the valve.</span>
 
@@ -1075,7 +1075,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Valve position request failed attempt {}/{}, {} is unknown&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_repeat</span><span class="p">,</span> <span class="n">raw_valve_position</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Valve position received was {}. It is unknown&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_valve_position</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="C3000Controller.set_valve_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.set_valve_position">[docs]</a>    <span class="k">def</span> <span class="nf">set_valve_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_position</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.set_valve_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.set_valve_position">[docs]</a>    <span class="k">def</span> <span class="nf">set_valve_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_position</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the position of the valve.</span>
 
@@ -1124,7 +1124,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Too many failed attempts in set_top_velocity!&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">ControllerRepeatedError</span></div>
 
-<div class="viewcode-block" id="C3000Controller.set_eeprom_config"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.set_eeprom_config">[docs]</a>    <span class="k">def</span> <span class="nf">set_eeprom_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.set_eeprom_config"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.set_eeprom_config">[docs]</a>    <span class="k">def</span> <span class="nf">set_eeprom_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand_value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the configuration of the EEPROM on the pumps.</span>
 
@@ -1144,31 +1144,31 @@
             <span class="nb">print</span><span class="p">(</span><span class="s">&quot;Unpower and repower the pump to make changes active!&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s">&quot;####################################################&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.flash_eeprom_3_way_y_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.flash_eeprom_3_way_y_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_3_way_y_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.flash_eeprom_3_way_y_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.flash_eeprom_3_way_y_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_3_way_y_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See set_eeprom_config()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_eeprom_config</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.flash_eeprom_3_way_t_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.flash_eeprom_3_way_t_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_3_way_t_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.flash_eeprom_3_way_t_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.flash_eeprom_3_way_t_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_3_way_t_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See set_eeprom_config()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_eeprom_config</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.flash_eeprom_4_way_nondist_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.flash_eeprom_4_way_nondist_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_4_way_nondist_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.flash_eeprom_4_way_nondist_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.flash_eeprom_4_way_nondist_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_4_way_nondist_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See set_eeprom_config()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_eeprom_config</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.flash_eeprom_4_way_dist_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.flash_eeprom_4_way_dist_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_4_way_dist_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.flash_eeprom_4_way_dist_valve"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.flash_eeprom_4_way_dist_valve">[docs]</a>    <span class="k">def</span> <span class="nf">flash_eeprom_4_way_dist_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See set_eeprom_config()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_eeprom_config</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="C3000Controller.get_eeprom_config"><a class="viewcode-back" href="../../pycont.html#pycont.controller.C3000Controller.get_eeprom_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_eeprom_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.get_eeprom_config"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_eeprom_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_eeprom_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the EEPROM configuration.</span>
 
@@ -1206,7 +1206,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pumps</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">pump_name</span><span class="p">,</span> <span class="n">pump_config</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">setup_config</span><span class="p">[</span><span class="s">&#39;pumps&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">defaulted_pump_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_pump_config</span><span class="p">(</span><span class="n">pump_config</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pumps</span><span class="p">[</span><span class="n">pump_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">C3000Controller</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_io</span><span class="p">,</span> <span class="n">pump_name</span><span class="p">,</span> <span class="n">defaulted_pump_config</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pumps</span><span class="p">[</span><span class="n">pump_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PumpController</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_io</span><span class="p">,</span> <span class="n">pump_name</span><span class="p">,</span> <span class="n">defaulted_pump_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_pumps_as_attributes</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>

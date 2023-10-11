@@ -330,7 +330,7 @@ class PumpHWError(Exception):
             print("** ERROR ** Unknown error")
 
 
-class C3000Controller:
+class PumpController:
     """
     This class represents the main controller for the C3000.
     The controller is what controls the pumps.
@@ -373,7 +373,7 @@ class C3000Controller:
         return int(self.number_of_steps / self.total_volume)
 
     @classmethod
-    def from_config(cls, pump_io: PumpIO, pump_name: str, pump_config: Dict) -> 'C3000Controller':
+    def from_config(cls, pump_io: PumpIO, pump_name: str, pump_config: Dict) -> 'PumpController':
         """
         Obtains the configuration data.
 
@@ -387,7 +387,7 @@ class C3000Controller:
             pump_config: Dictionary containing the pump configuration data.
 
         Returns:
-            C3000Controller: New C3000Controller object with the data set from the configuration.
+            PumpController: New C3000Controller object with the data set from the configuration.
 
         """
         pump_config['address'] = C3000SwitchToAddress[pump_config['switch']]

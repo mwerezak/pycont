@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .._logger import create_logger
-from . import PumpIO, C3000Controller, PumpIOTimeOutError
+from . import PumpIO, PumpController, PumpIOTimeOutError
 from .multipump import MultiPumpController
 
 from . import (
@@ -45,7 +45,7 @@ class VirtualPumpIO(PumpIO):
 
 
 
-class VirtualC3000Controller(C3000Controller):
+class VirtualC3000Controller(PumpController):
 
     def write_and_read_from_pump(self, packet, max_repeat=MAX_REPEAT_WRITE_AND_READ):
         raise NotImplementedError

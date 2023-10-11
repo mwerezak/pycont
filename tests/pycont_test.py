@@ -7,6 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 # simply import the module
 import pycont.controller
+from pycont.controller.config import ValvePosition
 
 # link to your config file
 SETUP_CONFIG_FILE = './pump_setup_config.json'
@@ -45,12 +46,12 @@ else:
 
 # the pump and deliver function respectively have a from_valve and to_valve argument
 # if set, the valve position is set before the pump moves
-controller.pumps['water'].pump(0.5, from_valve=pycont.controller.VALVE_INPUT, wait=True)
-controller.pumps['water'].deliver(0.5, to_valve=pycont.controller.VALVE_OUTPUT, wait=True)
+controller.pumps['water'].pump(0.5, from_valve=ValvePosition.Input, wait=True)
+controller.pumps['water'].deliver(0.5, to_valve=ValvePosition.Output, wait=True)
 
 # you can also transfer volume from valve to valve
 # the function is recursive so even of the volume is bigger than the syringe, it will iterate as many times as needed
-controller.pumps['acetone'].transfer(7, pycont.controller.VALVE_INPUT, pycont.controller.VALVE_OUTPUT)  # this function is blocking, no wait argument
+controller.pumps['acetone'].transfer(7, ValvePosition.Input, ValvePosition.Output)  # this function is blocking, no wait argument
 # note that it pump from and to the position it is currently set to, made it easy to leave a small volume in the pump if needed
 
 # you can also iterate on all the pumps

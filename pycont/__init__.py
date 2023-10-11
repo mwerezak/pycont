@@ -5,7 +5,7 @@ Custom library designed to control Tricontinent C-series syringe pumps.
 
 """
 from ._logger import __logger_root_name__
-from .controller import C3000Controller
+from .controller import PumpController
 from .controller.config import ValvePosition
 from .controller.multipump import MultiPumpController
 

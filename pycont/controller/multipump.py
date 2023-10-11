@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .._logger import create_logger
-from . import PumpIO, C3000Controller
+from . import PumpIO, PumpController
 from .config import ValvePosition
 
 if TYPE_CHECKING:
@@ -27,7 +27,7 @@ class MultiPumpController(object):
     """
     def __init__(self, setup_config: dict):
         self.logger = create_logger(self.__class__.__name__)
-        self.pumps: dict[str, C3000Controller] = {}
+        self.pumps: dict[str, PumpController] = {}
         self._io: Union[PumpIO, list[PumpIO]] = []
 
         # Sets groups and default configs if provided in the config dictionary
@@ -40,12 +40,12 @@ class MultiPumpController(object):
                 self._io.append(PumpIO.from_config(hub_config['io']))
                 for pump_name, pump_config in list(hub_config['pumps'].items()):
                     full_pump_config = self.default_pump_config(pump_config)
-                    self.pumps[pump_name] = C3000Controller.from_config(self._io[-1], pump_name, full_pump_config)
+                    self.pumps[pump_name] = PumpController.from_config(self._io[-1], pump_name, full_pump_config)
         else:  # This implements the "old" behaviour with one hub per object instance / json file
             self._io = PumpIO.from_config(setup_config['io'])
             for pump_name, pump_config in list(setup_config['pumps'].items()):
                 full_pump_config = self.default_pump_config(pump_config)
-                self.pumps[pump_name] = C3000Controller.from_config(self._io, pump_name, full_pump_config)
+                self.pumps[pump_name] = PumpController.from_config(self._io, pump_name, full_pump_config)
 
         # Adds pumps as attributes
         self.set_pumps_as_attributes()
@@ -99,7 +99,7 @@ class MultiPumpController(object):
             else:
                 setattr(self, pump_name, pump)
 
-    def get_pumps(self, pump_names: list[str]) -> list[C3000Controller]:
+    def get_pumps(self, pump_names: list[str]) -> list[PumpController]:
         """
         Obtains a list of all pumps with name in pump_names.
 
@@ -118,7 +118,7 @@ class MultiPumpController(object):
                 pass
         return pumps
 
-    def get_pumps_in_group(self, group_name: str) -> Optional[list[C3000Controller]]:
+    def get_pumps_in_group(self, group_name: str) -> Optional[list[PumpController]]:
         """
         Obtains a list of all pumps with group_name.
 
@@ -139,7 +139,7 @@ class MultiPumpController(object):
             pumps.append(self.pumps[pump_name])
         return pumps
 
-    def get_all_pumps(self) -> dict[str, C3000Controller]:
+    def get_all_pumps(self) -> dict[str, PumpController]:
         """
         Obtains a list of all pumps.
 
