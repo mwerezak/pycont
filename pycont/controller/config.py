@@ -25,11 +25,6 @@ class ValvePosition(Enum):
     Five = '5'
     Six = '6'
 
-    def __eq__(self, other: Union[str, ValvePosition]) -> bool:
-        if isinstance(other, str):
-            return self.value == other
-        return super().__eq__(other)
-
     def is_6way(self) -> bool:
         return self.value in _VALVE_6WAY_LIST
 
@@ -72,6 +67,48 @@ _MAX_TOP_VELOCITY = {
     Microstep.Mode2 : 48000,
 }
 
+class Address(Enum):
+    Switch0 = '1'
+    Switch1 = '2'
+    Switch2 = '3'
+    Switch3 = '4'
+    Switch4 = '5'
+    Switch5 = '6'
+    Switch6 = '7'
+    Switch7 = '8'
+    Switch8 = '9'
+    Switch9 = ':'
+    SwitchA = ';'
+    SwitchB = '<'
+    SwitchC = '='
+    SwitchD = '>'
+    SwitchE = '?'
+    SwitchF = '@'
+    Broadcast = '_',
+
+    @classmethod
+    def from_switch(cls, switch: str) -> Address:
+        return _ADDRESS_FROM_SWITCH[switch]
+
+_ADDRESS_FROM_SWITCH = {
+    '0' : Address.Switch0,
+    '1' : Address.Switch1,
+    '2' : Address.Switch2,
+    '3' : Address.Switch3,
+    '4' : Address.Switch4,
+    '5' : Address.Switch5,
+    '6' : Address.Switch6,
+    '7' : Address.Switch7,
+    '8' : Address.Switch8,
+    '9' : Address.Switch9,
+    'A' : Address.SwitchA,
+    'B' : Address.SwitchB,
+    'C' : Address.SwitchC,
+    'D' : Address.SwitchD,
+    'E' : Address.SwitchE,
+    'F' : Address.SwitchF,
+}
+
 @dataclass(frozen=True, kw_only=True)
 class PumpConfig:
     """
@@ -84,7 +121,7 @@ class PumpConfig:
     """
 
     name: str
-    address: str
+    address: Address
     total_volume: float
     micro_step_mode: Microstep = Microstep.Mode2
     top_velocity: int = 6000

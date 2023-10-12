@@ -4,10 +4,13 @@
    :synopsis: A module used for controlling the pumps.
 
 .. moduleauthor:: Jonathan Grizou <Jonathan.Grizou@gla.ac.uk>
+.. moduleauthor:: Mike Werezak <Mike.Werezak@nrcan-rncan.gc.ca>
 
 """
 
 # -*- coding: utf-8 -*-
+
+from __future__ import annotations
 
 import time
 import json
@@ -25,30 +28,7 @@ from ..socket_bridge import SocketBridge
 #: Represents the Broadcast of the C3000
 from ..dtprotocol import DTInstructionPacket
 
-from .config import ValvePosition, Microstep, PumpConfig
-
-C3000Broadcast = '_'
-
-#: Switches the C3000 to a certain address
-C3000SwitchToAddress = {
-    '0': '1',
-    '1': '2',
-    '2': '3',
-    '3': '4',
-    '4': '5',
-    '5': '6',
-    '6': '7',
-    '7': '8',
-    '8': '9',
-    '9': ':',
-    'A': ';',
-    'B': '<',
-    'C': '=',
-    'D': '>',
-    'E': '?',
-    'F': '@',
-    'BROADCAST': C3000Broadcast,
-}
+from .config import ValvePosition, Microstep, PumpConfig, Address
 
 #: default Input/Output (I/O) Baudrate
 DEFAULT_IO_BAUDRATE = 9600
@@ -350,7 +330,7 @@ class PumpController:
 
         self.config = config
 
-        self._protocol = pump_protocol.C3000Protocol(self.address)
+        self._protocol = pump_protocol.C3000Protocol(self.address.value)
 
         self.micro_step_mode = config.micro_step_mode
         self.total_volume = float(config.total_volume)  # in ml (float)
@@ -361,7 +341,7 @@ class PumpController:
         return self.config.name
 
     @property
-    def address(self) -> str:
+    def address(self) -> Address:
         return self.config.address
 
     @property
@@ -390,7 +370,7 @@ class PumpController:
             PumpController: New C3000Controller object with the data set from the configuration.
 
         """
-        pump_config['address'] = C3000SwitchToAddress[pump_config['switch']]
+        pump_config['address'] = Address.from_switch(pump_config['switch'])
         del(pump_config['switch'])
 
         pump_config['total_volume'] = float(pump_config['volume'])  # in ml (float)
@@ -1099,7 +1079,7 @@ class PumpController:
             elif valve_position.is_6way():
                 valve_position_packet = self._protocol.forge_valve_6way_packet(valve_position.value)
             else:
-                raise ValueError('Valve position {} unknown'.format(valve_position))
+                raise ValueError('Valve position unknown: {}'.format(valve_position))
 
             self.write_and_read_from_pump(valve_position_packet)
 
