@@ -927,13 +927,11 @@ class PumpController:
             speed_out: The speed of transfer from the valve, default set to None.
 
         """
-        volume_transferred = min(volume_in_ml, self.remaining_volume)
-        self.pump(volume_transferred, from_valve, speed_in=speed_in, wait=True)
-        self.deliver(volume_transferred, to_valve, speed_out=speed_out, wait=True)
-
-        remaining_volume_to_transfer = volume_in_ml - volume_transferred
-        if remaining_volume_to_transfer > 0:
-            self.transfer(remaining_volume_to_transfer, from_valve, to_valve, speed_in, speed_out)
+        while volume_in_ml > 1e-3:
+            volume_transferred = min(volume_in_ml, self.remaining_volume)
+            self.pump(volume_transferred, from_valve, speed_in=speed_in, wait=True)
+            self.deliver(volume_transferred, to_valve, speed_out=speed_out, wait=True)
+            volume_in_ml -= volume_transferred
 
     def is_volume_valid(self, volume_in_ml: float) -> bool:
         """
