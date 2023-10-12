@@ -47,6 +47,7 @@ _DECODE_POSITION = {
 #: 6 way valve
 _VALVE_6WAY_LIST = ('1', '2', '3', '4', '5', '6')
 
+
 class Microstep(Enum):
     Mode0 = 0
     Mode2 = 2
@@ -54,17 +55,9 @@ class Microstep(Enum):
     def number_of_steps(self) -> int:
         return _N_STEP_MODE[self]
 
-    def max_top_velocity(self) -> int:
-        return _MAX_TOP_VELOCITY[self]
-
 _N_STEP_MODE = {
-    Microstep.Mode0 : 3000,
-    Microstep.Mode2 : 24000,
-}
-
-_MAX_TOP_VELOCITY = {
-    Microstep.Mode0 : 6000,
-    Microstep.Mode2 : 48000,
+    Microstep.Mode0 : 1,
+    Microstep.Mode2 : 8,
 }
 
 class Address(Enum):
