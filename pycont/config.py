@@ -16,10 +16,10 @@ if TYPE_CHECKING:
     from .controller import PumpController, PumpIO
 
 class ValvePosition(Enum):
-    Input = 'I'
-    Output = 'O'
-    Bypass = 'B'
-    Extra = 'E'
+    Input = 'i'
+    Output = 'o'
+    Bypass = 'b'
+    Extra = 'e'
 
     One = '1'
     Two = '2'
@@ -29,26 +29,28 @@ class ValvePosition(Enum):
     Six = '6'
 
     def is_6way(self) -> bool:
-        return self.value in _VALVE_6WAY_LIST
+        return self in _VALVE_6WAY_LIST
+
+    @classmethod
+    def get_6way_position(cls, pos_num: int) -> ValvePosition:
+        """Get the corresponding 6-way valve position for integers 1..6"""
+        return _VALVE_6WAY_LIST[pos_num - 1]
 
     @classmethod
     def try_decode(cls, raw_pos: str) -> Optional[ValvePosition]:
-        result = _DECODE_POSITION.get(raw_pos)
-        if result is not None:
-            return result
-        if raw_pos in _VALVE_6WAY_LIST:
+        if raw_pos in cls.__members__ .values():
             return cls(raw_pos)
         return None
 
-_DECODE_POSITION = {
-    'i' : ValvePosition.Input,
-    'o' : ValvePosition.Output,
-    'b' : ValvePosition.Bypass,
-    'e' : ValvePosition.Extra,
-}
-
 #: 6 way valve
-_VALVE_6WAY_LIST = ('1', '2', '3', '4', '5', '6')
+_VALVE_6WAY_LIST = (
+    ValvePosition.One,
+    ValvePosition.Two,
+    ValvePosition.Three,
+    ValvePosition.Four,
+    ValvePosition.Five,
+    ValvePosition.Six,
+)
 
 
 class Microstep(Enum):
