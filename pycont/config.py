@@ -12,7 +12,8 @@ from typing import TYPE_CHECKING
 from ._models import get_controller_for_model
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Optional, Type
+    from .controller import PumpController, PumpIO
 
 class ValvePosition(Enum):
     Input = 'I'
@@ -128,3 +129,12 @@ class PumpConfig:
         pump_config['address'] = Address.from_switch(pump_config.pop('switch'))
         pump_config['total_volume'] = float(pump_config.pop('volume'))
         return cls(name = pump_name, **pump_config)
+
+    def get_controller_type(self) -> Type[PumpController]:
+        """Lookup the controller type based on the pump model."""
+        return get_controller_for_model(self.model)
+
+    def create_pump(self, pump_io: PumpIO) -> PumpController:
+        """Construct a pump controller from this config."""
+        pump_controller = self.get_controller_type()
+        return pump_controller(pump_io, self)

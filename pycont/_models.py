@@ -12,14 +12,14 @@ if TYPE_CHECKING:
 
 
 #: Model registry
-_PUMP_MODEL_TO_TYPE: dict[str, Type[PumpController]]
+_PUMP_MODEL_TO_TYPE: dict[str, Type[PumpController]] = {}
 
 def pump_model(model_name: str) -> Callable:
     """Decorator for registering a controller type with a model name"""
     def decorator(cls: Type[PumpController]) -> Type[PumpController]:
         if model_name in _PUMP_MODEL_TO_TYPE:
             raise ValueError(f"a controller is already registered for '{model_name}'")
-        _PUMP_MODEL_TO_TYPE[model_name] = PumpController
+        _PUMP_MODEL_TO_TYPE[model_name] = cls
         return cls
     return decorator
 

@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from .._logger import create_logger
 from ..config import ValvePosition, PumpConfig
 
-from . import PumpIO, PumpController, pump_controller_from_model
+from . import PumpIO, PumpController
 
 if TYPE_CHECKING:
     from typing import Any, Union, Optional
@@ -41,14 +41,12 @@ class MultiPumpController(object):
                 self._io.append(PumpIO.from_config(hub_config['io']))
                 for pump_name, pump_config in list(hub_config['pumps'].items()):
                     full_pump_config = PumpConfig.from_dict(pump_name, self._default_pump_config(pump_config))
-                    pump_controller = pump_controller_from_model(full_pump_config.model)
-                    self.pumps[pump_name] = pump_controller(self._io[-1], full_pump_config)
+                    self.pumps[pump_name] = full_pump_config.create_pump(self._io[-1])
         else:  # This implements the "old" behaviour with one hub per object instance / json file
             self._io = PumpIO.from_config(setup_config['io'])
             for pump_name, pump_config in list(setup_config['pumps'].items()):
                 full_pump_config = PumpConfig.from_dict(pump_name, self._default_pump_config(pump_config))
-                pump_controller = pump_controller_from_model(full_pump_config.model)
-                self.pumps[pump_name] = pump_controller(self._io, full_pump_config)
+                self.pumps[pump_name] = full_pump_config.create_pump(self._io)
 
         # Adds pumps as attributes
         self.set_pumps_as_attributes()
