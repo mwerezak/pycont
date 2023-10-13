@@ -1,6 +1,10 @@
 # pycont
 
-pycont is a python library to control Tricontinent C3000 pumps. It is meant to be easy to use, and transparent such that when reading your program you can actually know what is going on.
+This is a fork of pycont, a python library to control Tricontinent pumps. This fork supports multiple different pump types: C3000, C24000, CX6000, CX48000
+
+Only the C3000 and CX6000 have been tested, but the other models use the same command protocol and should work.
+
+pycont is meant to be easy to use, and transparent such that when reading your program you can actually know what is going on.
 
 ## Documentation
 For documentation on using this library and it's associated methods, please see the [pycont Github Pages](https://croningp.github.io/pycont/).
