@@ -11,7 +11,9 @@ import time
 import logging
 
 # simply import the module
-import pycont.controller
+import pycont.controller.multipump
+from pycont import ValvePosition
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -52,12 +54,12 @@ else:
 
 # the pump and deliver function respectively have a from_valve and to_valve argument
 # if set, the valve position is set before the pump moves
-controller.pumps['water'].pump(0.5, from_valve='1', wait=True)
-controller.pumps['water'].deliver(0.5, to_valve='6', wait=True)
+controller.pumps['water'].pump(0.5, from_valve=ValvePosition.One, wait=True)
+controller.pumps['water'].deliver(0.5, to_valve=ValvePosition.Six, wait=True)
 
 # you can also transfer volume from valve to valve
 # the function is recusive so even of the volume is bigger than the syringe, it will iterate as many times as needed
-controller.pumps['acetone'].transfer(7, '1', '6')  # this function is blocking, no wait argument
+controller.pumps['acetone'].transfer(7, ValvePosition.One, ValvePosition.Six)  # this function is blocking, no wait argument
 
 # note that it pump from and to the position it is currently set to, made it easy to leave a small volume in the pump if needed
 

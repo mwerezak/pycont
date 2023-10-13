@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 # simply import the module
 import pycont.controller
-from pycont.controller.config import ValvePosition
+from pycont.config import ValvePosition
 
 # link to your config file
 SETUP_CONFIG_FILE = './pump_setup_config.json'
