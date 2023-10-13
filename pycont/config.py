@@ -12,7 +12,8 @@ from typing import TYPE_CHECKING
 from ._models import get_controller_for_model
 
 if TYPE_CHECKING:
-    from typing import Optional, Type
+    from typing import Union, Optional, Type
+    from collections.abc import Collection
     from .controller import PumpController, PumpIO
 
 class ValvePosition(Enum):
@@ -140,3 +141,50 @@ class PumpConfig:
         """Construct a pump controller from this config."""
         pump_controller = self.get_controller_type()
         return pump_controller(pump_io, self)
+
+
+#: default Input/Output (I/O) Baudrate
+DEFAULT_IO_BAUDRATE = 9600
+
+#: Default timeout for I/O operations
+DEFAULT_IO_TIMEOUT = 1.0
+
+@dataclass(frozen=True)
+class SerialConfig:
+    port: str
+    baudrate: int = DEFAULT_IO_BAUDRATE
+    timeout: float = DEFAULT_IO_TIMEOUT
+
+@dataclass(frozen=True)
+class SocketConfig:
+    hostname: str
+    port: int
+    timeout: float = DEFAULT_IO_TIMEOUT
+
+@dataclass(frozen=True)
+class BusConfig:
+    connection: Union[SerialConfig, SocketConfig]
+    pumps: Collection[PumpConfig]
+
+    @classmethod
+    def from_dict(cls, bus_config: dict, pump_defaults: dict = None) -> BusConfig:
+        pumps = []
+        for pump_name, pump_config in bus_config['pumps'].items():
+            full_pump_config = {} if pump_defaults is None else dict(pump_defaults)
+            full_pump_config.update(pump_config)
+            pumps.append(PumpConfig.from_dict(pump_name, full_pump_config))
+
+        return cls(
+            connection = cls._io_config_from_dict(bus_config['io']),
+            pumps = tuple(pumps),
+        )
+
+    @staticmethod
+    def _io_config_from_dict(io_config: dict) -> Union[SocketConfig, SerialConfig]:
+        io_type = io_config.pop('type') if 'type' in io_config else 'serial'
+        if io_type == 'serial':
+            return SerialConfig(**io_config)
+        elif io_type == 'socket':
+            return  SocketConfig(**io_config)
+        else:
+            raise ValueError("unsupported I/O type: " + io_type)

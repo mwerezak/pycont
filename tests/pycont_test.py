@@ -7,6 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 # simply import the module
 import pycont.controller
+import pycont.controller.multipump
 from pycont.config import ValvePosition
 
 # link to your config file

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .._logger import create_logger
-from ..config import ValvePosition, PumpConfig
+from ..config import ValvePosition, BusConfig
 
 from . import PumpIO, PumpController
 
@@ -26,30 +26,39 @@ class MultiPumpController(object):
         setup_config: The configuration of the setup.
 
     """
-    def __init__(self, setup_config: dict):
+    def __init__(self, *config: BusConfig, groups: dict = None):
         self.logger = create_logger(self.__class__.__name__)
         self.pumps: dict[str, PumpController] = {}
-        self._io: Union[PumpIO, list[PumpIO]] = []
 
         # Sets groups and default configs if provided in the config dictionary
-        self.groups = setup_config['groups'] if 'groups' in setup_config else {}
-        self.default_config = setup_config['default'] if 'default' in setup_config else {}
+        self.groups = {} if groups is None else groups
 
-        if "hubs" in setup_config:  # This implements the "new" behaviour with multiple hubs
-            for hub_config in setup_config["hubs"]:
-                # Each hub has its own I/O config. Create a PumpIO object per each hub and reuse it with -1 after append
-                self._io.append(PumpIO.from_config(hub_config['io']))
-                for pump_name, pump_config in list(hub_config['pumps'].items()):
-                    full_pump_config = PumpConfig.from_dict(pump_name, self._default_pump_config(pump_config))
-                    self.pumps[pump_name] = full_pump_config.create_pump(self._io[-1])
-        else:  # This implements the "old" behaviour with one hub per object instance / json file
-            self._io = PumpIO.from_config(setup_config['io'])
-            for pump_name, pump_config in list(setup_config['pumps'].items()):
-                full_pump_config = PumpConfig.from_dict(pump_name, self._default_pump_config(pump_config))
-                self.pumps[pump_name] = full_pump_config.create_pump(self._io)
+        for bus_config in config:
+            pump_io = PumpIO()
+            pump_io.open_connection(bus_config.connection)
+
+            for pump_config in bus_config.pumps:
+                self.pumps[pump_config.name] = pump_config.create_pump(pump_io)
 
         # Adds pumps as attributes
         self.set_pumps_as_attributes()
+
+    @classmethod
+    def from_config(cls, setup_config: dict) -> 'MultiPumpController':
+        groups = setup_config['groups'] if 'groups' in setup_config else {}
+
+        pump_defaults = setup_config['default'] if 'default' in setup_config else {}
+
+        if 'hubs' in setup_config:
+            # This implements the "new" behaviour with multiple hubs
+            config = []
+            for hub_config in setup_config['hubs']:
+                config.append(BusConfig.from_dict(hub_config, pump_defaults))
+            return cls(*config, groups = groups)
+
+        else:
+            # This implements the "old" behaviour with one hub per object instance / json file
+            return cls(BusConfig.from_dict(setup_config, pump_defaults), groups=groups)
 
     @classmethod
     def from_configfile(cls, setup_configfile: Union[str, Path]) -> 'MultiPumpController':
@@ -66,22 +75,7 @@ class MultiPumpController(object):
 
         """
         with open(setup_configfile) as f:
-            return cls(json.load(f))
-
-    def _default_pump_config(self, pump_specific_config: dict) -> dict:
-        """
-        Creates a default pump configuration.
-
-        Args:
-            pump_specific_config: Dictionary containing the pump configuration.
-
-        Returns:
-            combined_pump_config: A new default pump configuration mirroring that of pump_config.
-
-        """
-        combined_pump_config = dict(self.default_config)
-        combined_pump_config.update(pump_specific_config)
-        return combined_pump_config
+            return cls.from_config(json.load(f))
 
     def set_pumps_as_attributes(self) -> None:
         """

@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import serial
@@ -19,14 +17,15 @@ from ..socket_bridge import SocketBridge
 #: Represents the Broadcast of the C3000
 from ..dtprotocol import DTInstructionPacket
 
+from ..config import (
+    SerialConfig, SocketConfig,
+    DEFAULT_IO_BAUDRATE, DEFAULT_IO_TIMEOUT,
+)
+
 if TYPE_CHECKING:
     from typing import Union, Optional, Any
 
 
-#: default Input/Output (I/O) Baudrate
-DEFAULT_IO_BAUDRATE = 9600
-#: Default timeout for I/O operations
-DEFAULT_IO_TIMEOUT = 1
 
 class PumpIO:
     """
@@ -41,61 +40,6 @@ class PumpIO:
         self.lock = threading.Lock()
 
         self._serial = None
-
-    @classmethod
-    def from_config(cls, io_config: dict) -> 'PumpIO':
-        """
-        Sets details laid out in the configuration .json file
-
-        Args:
-            cls: The initialising class.
-
-            io_config: Dictionary holding the configuration data.
-                port: The device name (depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.)
-                baudrate: Baudrate of the communication, default set to DEFAULT_IO_BAUDRATE(9600)
-                timeout: The timeout of communication, default set to DEFAULT_IO_TIMEOUT(1)
-
-        Returns:
-            PumpIO: New PumpIO object with the variables set from the configuration file.
-
-        """
-        instance = cls()
-
-        io_type = io_config.get('type', 'serial')
-
-        if io_type == 'serial':
-            port = io_config['port']
-            baudrate = io_config.get('baudrate', DEFAULT_IO_BAUDRATE)
-            timeout = io_config.get('timeout', DEFAULT_IO_TIMEOUT)
-            instance.open_serial(port, baudrate, timeout)
-
-        elif io_type == 'socket':
-            hostname = io_config['hostname']
-            port = io_config['port']
-            timeout = io_config.get('timeout', DEFAULT_IO_TIMEOUT)
-            instance.open_socket(hostname, port, timeout)
-
-        else:
-            raise ValueError(f'unknown I/O type: {io_type!r}')
-
-        return instance
-
-    @classmethod
-    def from_configfile(cls, io_configfile: Union[str, Path]) -> 'PumpIO':
-        """
-        Opens the configuration file and parses the data to be used in the from_config method.
-
-        Args:
-            cls: The initialising class.
-
-            io_configfile: File which contains the configuration data.
-
-        Returns:
-            PumpIO: New PumpIO object with the variables set form the configuration file.
-
-        """
-        with open(io_configfile) as f:
-            return cls.from_config(json.load(f))
 
     def __del__(self):
         """
@@ -130,6 +74,14 @@ class PumpIO:
             info['port'] = self._serial.port
 
         return info
+
+    def open_connection(self, config: Union[SerialConfig, SocketConfig]) -> None:
+        if isinstance(config, SerialConfig):
+            self.open_serial(config.port, config.baudrate, config.timeout)
+        elif isinstance(config, SocketConfig):
+            self.open_socket(config.hostname, config.port, config.timeout)
+        else:
+            ValueError(f"invalid I/O config: {type(config)}")
 
     def open_serial(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
         """
