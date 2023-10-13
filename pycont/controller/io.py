@@ -34,12 +34,12 @@ class PumpIO:
 
     _serial: Optional[Union[serial.serialposix.Serial, serial.serialwin32.Serial, SocketBridge]]
 
-    def __init__(self):
+    def __init__(self, serial = None):
         self.logger = create_logger(self.__class__.__name__)
 
         self.lock = threading.Lock()
 
-        self._serial = None
+        self._serial = serial
 
     def __del__(self):
         """
