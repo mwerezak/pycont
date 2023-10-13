@@ -699,7 +699,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_top_velocity</span></div>
 
-<div class="viewcode-block" id="PumpController.ensure_default_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.ensure_default_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_default_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController.reset_top_velocity"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.reset_top_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">reset_top_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures that the top velocity is the default top velocity.</span>
 
@@ -866,7 +866,7 @@
             <span class="k">if</span> <span class="n">speed_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_top_velocity</span><span class="p">(</span><span class="n">speed_in</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ensure_default_top_velocity</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reset_top_velocity</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">from_valve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_valve_position</span><span class="p">(</span><span class="n">from_valve</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
@@ -922,7 +922,7 @@
             <span class="k">if</span> <span class="n">speed_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_top_velocity</span><span class="p">(</span><span class="n">speed_out</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ensure_default_top_velocity</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reset_top_velocity</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">to_valve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_valve_position</span><span class="p">(</span><span class="n">to_valve</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
@@ -1005,7 +1005,7 @@
             <span class="k">if</span> <span class="n">speed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_top_velocity</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ensure_default_top_velocity</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reset_top_velocity</span><span class="p">(</span><span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
 
             <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_to_step</span><span class="p">(</span><span class="n">volume_in_ml</span><span class="p">)</span>
             <span class="n">packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_move_to_packet</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
@@ -1428,7 +1428,7 @@
         <span class="k">if</span> <span class="n">speed_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;set_top_velocity&#39;</span><span class="p">,</span> <span class="n">speed_in</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;ensure_default_top_velocity&#39;</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;reset_top_velocity&#39;</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">from_valve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;set_valve_position&#39;</span><span class="p">,</span> <span class="n">from_valve</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
@@ -1461,7 +1461,7 @@
         <span class="k">if</span> <span class="n">speed_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;set_top_velocity&#39;</span><span class="p">,</span> <span class="n">speed_out</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;ensure_default_top_velocity&#39;</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;reset_top_velocity&#39;</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">to_valve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_command_to_pumps</span><span class="p">(</span><span class="n">pump_names</span><span class="p">,</span> <span class="s">&#39;set_valve_position&#39;</span><span class="p">,</span> <span class="n">to_valve</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="n">secure</span><span class="p">)</span>

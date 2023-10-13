@@ -422,7 +422,19 @@ class PumpController(ABC):
         else:
             raise ValueError('Top velocity {} is not in range'.format(top_velocity))
 
-    def set_default_top_velocity(self, top_velocity: int) -> None:
+    @property
+    def default_top_velocity(self) -> int:
+        """
+        Gets the default top velocity.
+
+        Returns:
+            self.default_top_velocity: The default top velocity.
+
+        """
+        return self._default_top_velocity
+
+    @default_top_velocity.setter
+    def default_top_velocity(self, top_velocity: int) -> None:
         """
         Sets the default top velocity.
 
@@ -431,19 +443,9 @@ class PumpController(ABC):
 
         """
         self.check_top_velocity_within_range(top_velocity)
-        self.default_top_velocity = top_velocity
+        self._default_top_velocity = top_velocity
 
-    def get_default_top_velocity(self) -> int:
-        """
-        Gets the default top velocity.
-
-        Returns:
-            self.default_top_velocity: The default top velocity.
-
-        """
-        return self.default_top_velocity
-
-    def ensure_default_top_velocity(self, secure: bool = True) -> None:
+    def reset_top_velocity(self, secure: bool = True) -> None:
         """
         Ensures that the top velocity is the default top velocity.
 
@@ -604,7 +606,7 @@ class PumpController(ABC):
             if speed_in is not None:
                 self.set_top_velocity(speed_in, secure=secure)
             else:
-                self.ensure_default_top_velocity(secure=secure)
+                self.reset_top_velocity(secure=secure)
 
             if from_valve is not None:
                 self.set_valve_position(from_valve, secure=secure)
@@ -663,7 +665,7 @@ class PumpController(ABC):
             if speed_out is not None:
                 self.set_top_velocity(speed_out, secure=secure)
             else:
-                self.ensure_default_top_velocity(secure=secure)
+                self.reset_top_velocity(secure=secure)
 
             if to_valve is not None:
                 self.set_valve_position(to_valve, secure=secure)
@@ -743,7 +745,7 @@ class PumpController(ABC):
             if speed is not None:
                 self.set_top_velocity(speed, secure=secure)
             else:
-                self.ensure_default_top_velocity(secure=secure)
+                self.reset_top_velocity(secure=secure)
 
             steps = self.volume_to_step(volume_in_ml)
             packet = self._protocol.forge_move_to_packet(steps)

@@ -318,7 +318,7 @@ class MultiPumpController(object):
         if speed_in is not None:
             self.apply_command_to_pumps(pump_names, 'set_top_velocity', speed_in, secure=secure)
         else:
-            self.apply_command_to_pumps(pump_names, 'ensure_default_top_velocity', secure=secure)
+            self.apply_command_to_pumps(pump_names, 'reset_top_velocity', secure=secure)
 
         if from_valve is not None:
             self.apply_command_to_pumps(pump_names, 'set_valve_position', from_valve, secure=secure)
@@ -350,7 +350,7 @@ class MultiPumpController(object):
         if speed_out is not None:
             self.apply_command_to_pumps(pump_names, 'set_top_velocity', speed_out, secure=secure)
         else:
-            self.apply_command_to_pumps(pump_names, 'ensure_default_top_velocity', secure=secure)
+            self.apply_command_to_pumps(pump_names, 'reset_top_velocity', secure=secure)
 
         if to_valve is not None:
             self.apply_command_to_pumps(pump_names, 'set_valve_position', to_valve, secure=secure)
