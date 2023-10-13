@@ -17,7 +17,6 @@ from .._models import pump_model
 from ..config import Microstep
 
 from .base import PumpController, ControllerRepeatedError, PumpHWError
-from .io import PumpIO, PumpIOTimeOutError
 
 
 @pump_model('C3000')

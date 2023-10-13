@@ -9,12 +9,14 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from .io import SerialConfig, SocketConfig
 from ._models import get_controller_for_model
 
 if TYPE_CHECKING:
     from typing import Union, Optional, Type
     from collections.abc import Collection
-    from .controller import PumpController, PumpIO
+    from .io import PumpIO
+    from .controller import PumpController
 
 class ValvePosition(Enum):
     Input = 'i'
@@ -142,24 +144,6 @@ class PumpConfig:
         pump_controller = self.get_controller_type()
         return pump_controller(pump_io, self)
 
-
-#: default Input/Output (I/O) Baudrate
-DEFAULT_IO_BAUDRATE = 9600
-
-#: Default timeout for I/O operations
-DEFAULT_IO_TIMEOUT = 1.0
-
-@dataclass(frozen=True)
-class SerialConfig:
-    port: str
-    baudrate: int = DEFAULT_IO_BAUDRATE
-    timeout: float = DEFAULT_IO_TIMEOUT
-
-@dataclass(frozen=True)
-class SocketConfig:
-    hostname: str
-    port: int
-    timeout: float = DEFAULT_IO_TIMEOUT
 
 @dataclass(frozen=True)
 class BusConfig:

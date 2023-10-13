@@ -8,11 +8,12 @@ from typing import TYPE_CHECKING
 
 from .._logger import create_logger
 from ..config import ValvePosition
+from ..io import PumpIO, PumpIOTimeOutError
 
-from . import PumpIO, PumpController, PumpIOTimeOutError
+from . import PumpController
 from .multipump import MultiPumpController
 
-from . import (
+from ..io import (
     DEFAULT_IO_TIMEOUT,
     DEFAULT_IO_BAUDRATE,
 )

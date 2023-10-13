@@ -19,7 +19,7 @@ from ..dtprotocol import DTInstructionPacket
 
 from ..config import ValvePosition, Microstep, PumpConfig, Address
 
-from .io import PumpIO, PumpIOTimeOutError
+from ..io import PumpIO, PumpIOTimeOutError
 
 if TYPE_CHECKING:
     pass

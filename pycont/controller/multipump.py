@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING
 
 from .._logger import create_logger
 from ..config import ValvePosition, BusConfig
-
-from . import PumpIO, PumpController
+from ..io import PumpIO
+from . import PumpController
 
 if TYPE_CHECKING:
     from typing import Any, Union, Optional
