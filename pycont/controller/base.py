@@ -17,8 +17,9 @@ from .. import pump_protocol
 #: Represents the Broadcast of the C3000
 from ..dtprotocol import DTInstructionPacket
 
+from ..config import ValvePosition, Microstep, PumpConfig, Address
+
 from . import PumpIO, PumpIOTimeOutError
-from .config import ValvePosition, Microstep, PumpConfig, Address
 
 if TYPE_CHECKING:
     pass
@@ -120,34 +121,6 @@ class PumpController(ABC):
     @property
     def steps_per_ml(self) -> int:
         return int(self.number_of_steps / self.total_volume)
-
-    @classmethod
-    def from_config(cls, pump_io: PumpIO, pump_name: str, pump_config: dict) -> 'PumpController':
-        """
-        Obtains the configuration data.
-
-        Args:
-            cls: The initialising class.
-
-            pump_io: PumpIO object.
-
-            pump_name: Name of the pump.
-
-            pump_config: Dictionary containing the pump configuration data.
-
-        Returns:
-            PumpController: New C3000Controller object with the data set from the configuration.
-
-        """
-        pump_config['address'] = Address.from_switch(pump_config['switch'])
-        del(pump_config['switch'])
-
-        pump_config['total_volume'] = float(pump_config['volume'])  # in ml (float)
-        del(pump_config['volume'])
-
-        config = PumpConfig(name = pump_name, **pump_config)
-
-        return cls(pump_io, config)
 
     def write_and_read_from_pump(self, packet: DTInstructionPacket, max_repeat: int = MAX_REPEAT_WRITE_AND_READ)\
             -> tuple[str, str, str]:

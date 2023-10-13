@@ -1,5 +1,6 @@
 {
   "default": {
+    "model": "C3000",
     "volume": 5,
     "micro_step_mode": 2,
     "top_velocity": 6000
@@ -10,6 +11,7 @@
   },
   "hubs": [{
     "io": {
+        "type": "serial",
         "port": "/dev/trihub",
         "baudrate": 38400,
         "timeout": 1

@@ -1,10 +1,12 @@
 {
   "io": {
+      "type": "serial",
       "port": "/dev/ttyUSB0",
       "baudrate": 9600,
       "timeout": 1
   },
   "default": {
+    "model": "C3000",
     "volume": 5,
     "micro_step_mode": 2,
     "top_velocity": 24000,

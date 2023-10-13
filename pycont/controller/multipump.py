@@ -10,8 +10,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .._logger import create_logger
-from . import PumpIO, PumpController
-from .config import ValvePosition
+from ..config import ValvePosition, PumpConfig
+
+from . import PumpIO, PumpController, pump_controller_from_model
 
 if TYPE_CHECKING:
     from typing import Any, Union, Optional
@@ -39,13 +40,15 @@ class MultiPumpController(object):
                 # Each hub has its own I/O config. Create a PumpIO object per each hub and reuse it with -1 after append
                 self._io.append(PumpIO.from_config(hub_config['io']))
                 for pump_name, pump_config in list(hub_config['pumps'].items()):
-                    full_pump_config = self.default_pump_config(pump_config)
-                    self.pumps[pump_name] = PumpController.from_config(self._io[-1], pump_name, full_pump_config)
+                    full_pump_config = PumpConfig.from_dict(pump_name, self._default_pump_config(pump_config))
+                    pump_controller = pump_controller_from_model(full_pump_config.model)
+                    self.pumps[pump_name] = pump_controller(self._io[-1], full_pump_config)
         else:  # This implements the "old" behaviour with one hub per object instance / json file
             self._io = PumpIO.from_config(setup_config['io'])
             for pump_name, pump_config in list(setup_config['pumps'].items()):
-                full_pump_config = self.default_pump_config(pump_config)
-                self.pumps[pump_name] = PumpController.from_config(self._io, pump_name, full_pump_config)
+                full_pump_config = PumpConfig.from_dict(pump_name, self._default_pump_config(pump_config))
+                pump_controller = pump_controller_from_model(full_pump_config.model)
+                self.pumps[pump_name] = pump_controller(self._io, full_pump_config)
 
         # Adds pumps as attributes
         self.set_pumps_as_attributes()
@@ -67,7 +70,7 @@ class MultiPumpController(object):
         with open(setup_configfile) as f:
             return cls(json.load(f))
 
-    def default_pump_config(self, pump_specific_config: dict) -> dict:
+    def _default_pump_config(self, pump_specific_config: dict) -> dict:
         """
         Creates a default pump configuration.
 
@@ -78,14 +81,8 @@ class MultiPumpController(object):
             combined_pump_config: A new default pump configuration mirroring that of pump_config.
 
         """
-        # Makes a copy of the default values (this is needed because we are going to merge default with pump settings)
         combined_pump_config = dict(self.default_config)
-
-        # Adds pump specific settings
-        for k, v in list(pump_specific_config.items()):
-            combined_pump_config[k] = v
-
-        # Returns the combination of default settings and pump specific settings
+        combined_pump_config.update(pump_specific_config)
         return combined_pump_config
 
     def set_pumps_as_attributes(self) -> None:

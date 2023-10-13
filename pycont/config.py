@@ -9,6 +9,8 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from ._models import get_controller_for_model
+
 if TYPE_CHECKING:
     from typing import Optional
 
@@ -114,8 +116,15 @@ class PumpConfig:
     """
 
     name: str
+    model: str
     address: Address
     total_volume: float
     micro_step_mode: Microstep = Microstep.Mode2
     top_velocity: int = 6000
     initialize_valve_position: ValvePosition = ValvePosition.Input
+
+    @classmethod
+    def from_dict(cls, pump_name: str, pump_config: dict) -> PumpConfig:
+        pump_config['address'] = Address.from_switch(pump_config.pop('switch'))
+        pump_config['total_volume'] = float(pump_config.pop('volume'))
+        return cls(name = pump_name, **pump_config)

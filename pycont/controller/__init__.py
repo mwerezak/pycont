@@ -21,12 +21,15 @@ import threading
 
 from .._logger import create_logger
 
+from .._models import pump_model
+
 from ..socket_bridge import SocketBridge
 
 #: Represents the Broadcast of the C3000
 from ..dtprotocol import DTInstructionPacket
 
-from .config import ValvePosition, Microstep, PumpConfig, Address
+from ..config import Microstep
+
 from .base import PumpController, ControllerRepeatedError, PumpHWError
 
 
@@ -264,6 +267,54 @@ class PumpIOTimeOutError(Exception):
     pass
 
 
+@pump_model('C3000')
+class C3000Controller(PumpController):
+    @property
+    def number_of_steps(self) -> int:
+        return N_STEP_INCREMENTS[type(self)] * self.micro_step_mode.number_of_steps()
+
+    @property
+    def max_top_velocity(self) -> int:
+        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]
+
+
+@pump_model('C24000')
+class C24000Controller(PumpController):
+    """Untested!"""
+
+    @property
+    def number_of_steps(self) -> int:
+        return N_STEP_INCREMENTS[type(self)] * self.micro_step_mode.number_of_steps()
+
+    @property
+    def max_top_velocity(self) -> int:
+        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]
+
+
+@pump_model('CX6000')
+class CX6000Controller(PumpController):
+    @property
+    def number_of_steps(self) -> int:
+        return N_STEP_INCREMENTS[type(self)] * self.micro_step_mode.number_of_steps()
+
+    @property
+    def max_top_velocity(self) -> int:
+        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]
+
+
+@pump_model('CX48000')
+class CX48000Controller(PumpController):
+    """Untested!"""
+
+    @property
+    def number_of_steps(self) -> int:
+        return N_STEP_INCREMENTS[type(self)] * self.micro_step_mode.number_of_steps()
+
+    @property
+    def max_top_velocity(self) -> int:
+        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]
+
+
 # seems to be common to both C/CX series pumps
 COMMON_MAX_TOP_VELOCITY = {
     Microstep.Mode0 : 6000,
@@ -271,51 +322,8 @@ COMMON_MAX_TOP_VELOCITY = {
 }
 
 N_STEP_INCREMENTS = {
-    'C3000'   :  3000,
-    'C24000'  : 24000,
-    'CX6000'  :  6000,
-    'CX48000' : 48000,
+    C3000Controller   :  3000,
+    C24000Controller  : 24000,
+    CX6000Controller  :  6000,
+    CX48000Controller : 48000,
 }
-
-class C3000Controller(PumpController):
-    @property
-    def number_of_steps(self) -> int:
-        return N_STEP_INCREMENTS['C3000'] * self.micro_step_mode.number_of_steps()
-
-    @property
-    def max_top_velocity(self) -> int:
-        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]
-
-
-class C24000Controller(PumpController):
-    """Untested!"""
-
-    @property
-    def number_of_steps(self) -> int:
-        return N_STEP_INCREMENTS['C24000'] * self.micro_step_mode.number_of_steps()
-
-    @property
-    def max_top_velocity(self) -> int:
-        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]
-
-
-class CX6000Controller(PumpController):
-    @property
-    def number_of_steps(self) -> int:
-        return N_STEP_INCREMENTS['CX6000'] * self.micro_step_mode.number_of_steps()
-
-    @property
-    def max_top_velocity(self) -> int:
-        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]
-
-
-class CX48000Controller(PumpController):
-    """Untested!"""
-
-    @property
-    def number_of_steps(self) -> int:
-        return N_STEP_INCREMENTS['CX48000'] * self.micro_step_mode.number_of_steps()
-
-    @property
-    def max_top_velocity(self) -> int:
-        return COMMON_MAX_TOP_VELOCITY[self.micro_step_mode]

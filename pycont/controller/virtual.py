@@ -7,15 +7,19 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .._logger import create_logger
+from ..config import ValvePosition
+
 from . import PumpIO, PumpController, PumpIOTimeOutError
 from .multipump import MultiPumpController
 
 from . import (
     DEFAULT_IO_TIMEOUT,
     DEFAULT_IO_BAUDRATE,
+)
+
+from .base import (
     MAX_REPEAT_WRITE_AND_READ,
     MAX_REPEAT_OPERATION,
-    VALVE_INPUT,
 )
 
 if TYPE_CHECKING:
@@ -45,7 +49,15 @@ class VirtualPumpIO(PumpIO):
 
 
 
-class VirtualC3000Controller(PumpController):
+class VirtualController(PumpController):
+
+    @property
+    def max_top_velocity(self) -> int:
+        return 6000
+
+    @property
+    def number_of_steps(self) -> int:
+        return 3000
 
     def write_and_read_from_pump(self, packet, max_repeat=MAX_REPEAT_WRITE_AND_READ):
         raise NotImplementedError
@@ -101,12 +113,12 @@ class VirtualC3000Controller(PumpController):
     def go_to_max_volume(self, speed=None, wait=False):
         return True
 
-    current_valve_position: str
+    current_valve_position: ValvePosition
     def get_valve_position(self, max_repeat=MAX_REPEAT_OPERATION):
         if self.current_valve_position is not None:
             return self.current_valve_position
         else:
-            return VALVE_INPUT
+            return ValvePosition.Input
 
     def set_valve_position(self, valve_position, max_repeat=MAX_REPEAT_OPERATION, secure=True):
         self.current_valve_position = valve_position
@@ -134,12 +146,12 @@ class VirtualMultiPumpController(MultiPumpController):
                 # Each hub has its own I/O config. Create a PumpIO object per each hub and reuse it with -1 after append
                 self._io.append(VirtualPumpIO.from_config(hub_config['io']))
                 for pump_name, pump_config in list(hub_config['pumps'].items()):
-                    full_pump_config = self.default_pump_config(pump_config)
+                    full_pump_config = self._default_pump_config(pump_config)
                     self.pumps[pump_name] = VirtualC3000Controller.from_config(self._io[-1], pump_name, full_pump_config)
         else:  # This implements the "old" behaviour with one hub per object instance / json file
             self._io = VirtualPumpIO.from_config(setup_config['io'])
             for pump_name, pump_config in list(setup_config['pumps'].items()):
-                full_pump_config = self.default_pump_config(pump_config)
+                full_pump_config = self._default_pump_config(pump_config)
                 self.pumps[pump_name] = VirtualC3000Controller.from_config(self._io, pump_name, full_pump_config)
 
         self.set_pumps_as_attributes()
