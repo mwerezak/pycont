@@ -9,41 +9,31 @@ from __future__ import annotations
 import os
 import io
 import time
+import socket
 from io import BytesIO
 from typing import TYPE_CHECKING
 
-import socket
 if TYPE_CHECKING:
-    from typing import Union, Optional
+    from typing import Union
 
 class SocketBridge:
-    def __init__(self, timeout: Optional[float]):
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.settimeout(timeout)
-
+    def __init__(self, sock: socket):
+        self.socket = sock
         self._buf = BytesIO()
 
-        self.hostname = None
-        self.port = None
+    @property
+    def hostname(self) -> str:
+        return self.socket.hostname
 
-    def open(self, hostname: str, port: int) -> None:
-        self.hostname = hostname
-        self.port = port
-        self._sock.connect((hostname, port))
+    @property
+    def port(self) -> str:
+        return self.socket.port
 
     def _buf_pos(self) -> int:
         return self._buf.tell()
 
     def _buf_remaining(self) -> int:
         return len(self._buf.getbuffer()) - self._buf.tell()
-
-    @property
-    def timeout(self) -> Optional[float]:
-        return self._sock.gettimeout()
-
-    @timeout.setter
-    def timeout(self, value: Optional[float]) -> None:
-        self._sock.settimeout(value)
 
     def _trim_buffer(self) -> None:
         """Remove everything before the current buffer position"""
@@ -60,10 +50,10 @@ class SocketBridge:
         result = bytearray()
 
         start = time.time()
-        timeout = self._sock.gettimeout()
+        timeout = self.socket.gettimeout()
         while not result.endswith(b'\n') and (timeout is None or time.time() - start < timeout):
             if self._buf_remaining() < self._BUF_FILL:
-                data = self._sock.recv(self._BUF_FILL)
+                data = self.socket.recv(self._BUF_FILL)
 
                 pos = self._buf_pos()
                 try:
@@ -81,11 +71,11 @@ class SocketBridge:
 
     def write(self, data: Union[bytes, bytearray, memoryview]) -> int:
         """Write the bytes data to the port."""
-        self._sock.sendall(data)
+        self.socket.sendall(data)
         return len(data)
 
     def close(self) -> None:
-        self._sock.close()
+        self.socket.close()
 
     if os.name == 'nt':
         _BLOCK_ERR = BlockingIOError
@@ -96,12 +86,12 @@ class SocketBridge:
     def reset_input_buffer(self) -> None:
         """Flush input buffer, discarding all its contents."""
         # enter non-blocking mode and call recv() until we would block
-        timeout = self._sock.gettimeout()
+        timeout = self.socket.gettimeout()
         try:
-            self._sock.settimeout(0)
+            self.socket.settimeout(0)
             while True:
-                self._sock.recv(1024)
+                self.socket.recv(1024)
         except self._BLOCK_ERR:
             pass
         finally:
-            self._sock.settimeout(timeout)
+            self.socket.settimeout(timeout)

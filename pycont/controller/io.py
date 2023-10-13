@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import serial
+import socket
 import threading
 
 from .._logger import create_logger
@@ -110,8 +111,9 @@ class PumpIO:
             timeout: The timeout of the communication, default set to DEFAULT_IO_TIMEOUT(1).
 
         """
-        self._serial = SocketBridge(timeout)
-        self._serial.open(hostname, port)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((hostname, port))
+        self._serial = SocketBridge(sock)
         self.logger.debug("Opening port '%s'", self._serial, extra=self._debug_info())
 
     def close(self) -> None:
