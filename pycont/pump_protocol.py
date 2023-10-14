@@ -115,7 +115,7 @@ ERROR_STATUSES_BUSY = (STATUS_BUSY_INIT_FAILURE, STATUS_BUSY_INVALID_COMMAND, ST
                        STATUS_BUSY_VALVE_OVERLOAD, STATUS_BUSY_PLUNGER_STUCK)
 
 
-class C3000Protocol:
+class PumpProtocol:
     """
     This class is used to represent the protocol which the pumps will follow when controlled.
 

@@ -94,7 +94,7 @@ class PumpController(ABC):
 
         self.config = config
 
-        self._protocol = pump_protocol.C3000Protocol(self.address.value)
+        self._protocol = pump_protocol.PumpProtocol(self.address.value)
 
         self.micro_step_mode = config.micro_step_mode
         self.total_volume = float(config.total_volume)  # in ml (float)

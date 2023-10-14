@@ -1099,8 +1099,8 @@ The controller is what controls the pumps.</p>
 <div class="section" id="module-pycont.pump_protocol">
 <span id="pump-protocol-module"></span><span id="pump-protocol"></span><h2>Pump Protocol Module<a class="headerlink" href="#module-pycont.pump_protocol" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-pump_protocol"></span><dl class="class">
-<dt id="pycont.pump_protocol.C3000Protocol">
-<em class="property">class </em><code class="descclassname">pycont.pump_protocol.</code><code class="descname">C3000Protocol</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol">
+<em class="property">class </em><code class="descclassname">pycont.pump_protocol.</code><code class="descname">PumpProtocol</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>This class is used to represent the protocol which the pumps will follow when controlled.</p>
 <dl class="docutils">
@@ -1108,8 +1108,8 @@ The controller is what controls the pumps.</p>
 <dd>address (str): Address of the pump.</dd>
 </dl>
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.decode_packet">
-<code class="descname">decode_packet</code><span class="sig-paren">(</span><em>dtresponse</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.decode_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.decode_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.decode_packet">
+<code class="descname">decode_packet</code><span class="sig-paren">(</span><em>dtresponse</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.decode_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.decode_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decodes the response packet form the device.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1120,8 +1120,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_deliver_packet">
-<code class="descname">forge_deliver_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_deliver_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_deliver_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_deliver_packet">
+<code class="descname">forge_deliver_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_deliver_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_deliver_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for delivering the payload.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1132,8 +1132,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_eeprom_config_packet">
-<code class="descname">forge_eeprom_config_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_eeprom_config_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_eeprom_config_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_eeprom_config_packet">
+<code class="descname">forge_eeprom_config_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_eeprom_config_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_eeprom_config_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for accessing the EEPROM configuration of the device.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1144,8 +1144,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_initialize_no_valve_packet">
-<code class="descname">forge_initialize_no_valve_packet</code><span class="sig-paren">(</span><em>operand_value=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_initialize_no_valve_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_initialize_no_valve_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_initialize_no_valve_packet">
+<code class="descname">forge_initialize_no_valve_packet</code><span class="sig-paren">(</span><em>operand_value=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_initialize_no_valve_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_initialize_no_valve_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for initialising with no valves.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1156,8 +1156,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_initialize_valve_left_packet">
-<code class="descname">forge_initialize_valve_left_packet</code><span class="sig-paren">(</span><em>operand_value=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_initialize_valve_left_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_initialize_valve_left_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_initialize_valve_left_packet">
+<code class="descname">forge_initialize_valve_left_packet</code><span class="sig-paren">(</span><em>operand_value=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_initialize_valve_left_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_initialize_valve_left_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for initialising the left valve.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1168,8 +1168,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_initialize_valve_only_packet">
-<code class="descname">forge_initialize_valve_only_packet</code><span class="sig-paren">(</span><em>operand_string=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_initialize_valve_only_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_initialize_valve_only_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_initialize_valve_only_packet">
+<code class="descname">forge_initialize_valve_only_packet</code><span class="sig-paren">(</span><em>operand_string=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_initialize_valve_only_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_initialize_valve_only_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for initialising with valves only.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1180,8 +1180,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_initialize_valve_right_packet">
-<code class="descname">forge_initialize_valve_right_packet</code><span class="sig-paren">(</span><em>operand_value=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_initialize_valve_right_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_initialize_valve_right_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_initialize_valve_right_packet">
+<code class="descname">forge_initialize_valve_right_packet</code><span class="sig-paren">(</span><em>operand_value=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_initialize_valve_right_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_initialize_valve_right_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for initialising the right valve.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1192,8 +1192,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_microstep_mode_packet">
-<code class="descname">forge_microstep_mode_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_microstep_mode_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_microstep_mode_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_microstep_mode_packet">
+<code class="descname">forge_microstep_mode_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_microstep_mode_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_microstep_mode_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for initialising microstep mode.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1204,8 +1204,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_move_to_packet">
-<code class="descname">forge_move_to_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_move_to_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_move_to_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_move_to_packet">
+<code class="descname">forge_move_to_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_move_to_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_move_to_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for moving the device to a location.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1216,8 +1216,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_packet">
-<code class="descname">forge_packet</code><span class="sig-paren">(</span><em>dtcommands</em>, <em>execute=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_packet">
+<code class="descname">forge_packet</code><span class="sig-paren">(</span><em>dtcommands</em>, <em>execute=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet which will be sent to the device.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1230,8 +1230,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_pump_packet">
-<code class="descname">forge_pump_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_pump_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_pump_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_pump_packet">
+<code class="descname">forge_pump_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_pump_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_pump_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for the pump action of the device.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1242,8 +1242,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_cutoff_velocity_packet">
-<code class="descname">forge_report_cutoff_velocity_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_cutoff_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_cutoff_velocity_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_cutoff_velocity_packet">
+<code class="descname">forge_report_cutoff_velocity_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_cutoff_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_cutoff_velocity_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the device&#8217;s cutoff velocity.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1252,8 +1252,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_eeprom_packet">
-<code class="descname">forge_report_eeprom_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_eeprom_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_eeprom_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_eeprom_packet">
+<code class="descname">forge_report_eeprom_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_eeprom_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_eeprom_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the EEPROM.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1262,8 +1262,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_initialized_packet">
-<code class="descname">forge_report_initialized_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_initialized_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_initialized_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_initialized_packet">
+<code class="descname">forge_report_initialized_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_initialized_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_initialized_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the initialisation of the device.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1272,8 +1272,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_peak_velocity_packet">
-<code class="descname">forge_report_peak_velocity_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_peak_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_peak_velocity_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_peak_velocity_packet">
+<code class="descname">forge_report_peak_velocity_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_peak_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_peak_velocity_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the device&#8217;s peak velocity.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1282,8 +1282,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_plunger_position_packet">
-<code class="descname">forge_report_plunger_position_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_plunger_position_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_plunger_position_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_plunger_position_packet">
+<code class="descname">forge_report_plunger_position_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_plunger_position_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_plunger_position_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the device&#8217;s plunger position.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1292,8 +1292,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_start_velocity_packet">
-<code class="descname">forge_report_start_velocity_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_start_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_start_velocity_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_start_velocity_packet">
+<code class="descname">forge_report_start_velocity_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_start_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_start_velocity_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the device&#8217;s start velocity.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1302,8 +1302,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_status_packet">
-<code class="descname">forge_report_status_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_status_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_status_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_status_packet">
+<code class="descname">forge_report_status_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_status_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_status_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the device status.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1312,8 +1312,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_report_valve_position_packet">
-<code class="descname">forge_report_valve_position_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_report_valve_position_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_report_valve_position_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_report_valve_position_packet">
+<code class="descname">forge_report_valve_position_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_report_valve_position_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_report_valve_position_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for reporting the device&#8217;s valve position.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1322,8 +1322,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_top_velocity_packet">
-<code class="descname">forge_top_velocity_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_top_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_top_velocity_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_top_velocity_packet">
+<code class="descname">forge_top_velocity_packet</code><span class="sig-paren">(</span><em>operand_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_top_velocity_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_top_velocity_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for the top velocity of the device.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1334,8 +1334,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_valve_bypass_packet">
-<code class="descname">forge_valve_bypass_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_valve_bypass_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_valve_bypass_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_valve_bypass_packet">
+<code class="descname">forge_valve_bypass_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_valve_bypass_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_valve_bypass_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for bypassing a valve on the device.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1344,8 +1344,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_valve_extra_packet">
-<code class="descname">forge_valve_extra_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_valve_extra_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_valve_extra_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_valve_extra_packet">
+<code class="descname">forge_valve_extra_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_valve_extra_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_valve_extra_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for an extra valve.</p>
 <dl class="docutils">
 <dt>Returns:</dt>
@@ -1354,8 +1354,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_valve_input_packet">
-<code class="descname">forge_valve_input_packet</code><span class="sig-paren">(</span><em>operand_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_valve_input_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_valve_input_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_valve_input_packet">
+<code class="descname">forge_valve_input_packet</code><span class="sig-paren">(</span><em>operand_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_valve_input_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_valve_input_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for the input into a valve on the device.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1366,8 +1366,8 @@ The controller is what controls the pumps.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pycont.pump_protocol.C3000Protocol.forge_valve_output_packet">
-<code class="descname">forge_valve_output_packet</code><span class="sig-paren">(</span><em>operand_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#C3000Protocol.forge_valve_output_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.C3000Protocol.forge_valve_output_packet" title="Permalink to this definition">¶</a></dt>
+<dt id="pycont.pump_protocol.PumpProtocol.forge_valve_output_packet">
+<code class="descname">forge_valve_output_packet</code><span class="sig-paren">(</span><em>operand_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycont/pump_protocol.html#PumpProtocol.forge_valve_output_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycont.pump_protocol.PumpProtocol.forge_valve_output_packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a packet for the output from a valve on the device.</p>
 <dl class="docutils">
 <dt>Args:</dt>
