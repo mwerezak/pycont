@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import itertools
-from typing import List, Tuple, Optional
+from typing import TYPE_CHECKING
 
 from ._logger import create_logger
+from .config import Address
+
+if TYPE_CHECKING:
+    from typing import Any, Union
+    from collections.abc import Sequence
 
 DTStart = '/'
 DTStop = '\r'
@@ -53,22 +58,23 @@ class DTInstructionPacket:
         (for more details see http://www.tricontinent.com/products/cseries-syringe-pumps)
         """
 
-    def __init__(self, address: str, dtcommands: List[DTCommand]):
+    def __init__(self, address: str, dtcommands: Sequence[DTCommand]):
         self.address = address.encode()
         self.dtcommands = dtcommands
 
     def to_array(self) -> bytearray:
-        commands = ''.encode()
-        for dtcommand in self.dtcommands:
-            commands += dtcommand.to_string()
-        return bytearray(itertools.chain(DTStart.encode(),
-                                         self.address,
-                                         commands,
-                                         DTStop.encode(), ))
+        return bytearray(itertools.chain(
+            DTStart.encode(),
+            self.address,
+            *(dtcommand.to_string() for dtcommand in self.dtcommands),
+            DTStop.encode(),
+        ))
 
     def to_string(self) -> bytes:
         return bytes(self.to_array())
 
+
+class DTStatusDecodeError(Exception): pass
 
 class DTStatus(object):
     """ This class is used to represent a DTstatus, the response of the device from a command.
@@ -82,20 +88,20 @@ class DTStatus(object):
     def __init__(self, response: bytes):
         self.logger = create_logger(self.__class__.__name__)
         try:
-            self.response = response.decode()
+            raw_response = response.decode()
         except UnicodeDecodeError:
-            self.logger.debug('Could not decode  {!r}'.format(response))
-            self.response = None  # type: ignore
+            raise DTStatusDecodeError('Could not decode {!r}'.format(response)) from None
 
-    def decode(self) -> Optional[Tuple[str, str, str]]:
-        if self.response is not None:
-            info = self.response.rstrip().rstrip('\x03').lstrip(DTStart)
-            address = info[0]
-            # try:
-            status = info[1]
-            data = info[2:]
-            # except IndexError:
-            #     return None
-            return address, status, data
-        else:
-            return None
+        self.address, self.status, self.data = self._extract_response_parts(raw_response)
+
+    def _extract_response_parts(self, response: str) -> tuple[Union[Address, str], str, str]:
+        info = response.rstrip().rstrip('\x03').lstrip(DTStart)
+
+        address = info[0]
+        try:
+            address = Address(address)
+        except ValueError:
+            self.logger.warning(f"Invalid address {info[0]!r}")
+
+        return address, info[1], info[2:]  # address, status, data
+

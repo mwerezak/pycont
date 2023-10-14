@@ -15,7 +15,7 @@ from .._logger import create_logger
 from .. import pump_protocol
 
 #: Represents the Broadcast of the C3000
-from ..dtprotocol import DTInstructionPacket
+from ..dtprotocol import DTInstructionPacket, DTStatus, DTStatusDecodeError
 
 from ..config import ValvePosition, Microstep, PumpConfig, Address
 
@@ -122,8 +122,9 @@ class PumpController(ABC):
     def steps_per_ml(self) -> int:
         return int(self.number_of_steps / self.total_volume)
 
-    def write_and_read_from_pump(self, packet: DTInstructionPacket, max_repeat: int = MAX_REPEAT_WRITE_AND_READ)\
-            -> tuple[str, str, str]:
+    def _write_and_read_from_pump(
+        self, packet: DTInstructionPacket, max_repeat: int = MAX_REPEAT_WRITE_AND_READ
+    ) -> DTStatus:
         """
         Writes packets to and reads the response from the pump.
 
@@ -145,14 +146,16 @@ class PumpController(ABC):
             self.logger.debug("Write and read {}/{}".format(i + 1, max_repeat))
             try:
                 response = self._io.write_and_readline(packet)
-                decoded_response = self._protocol.decode_packet(response)
-                if decoded_response is not None:
-                    return decoded_response
-                else:
-                    self.logger.debug("Decode error for {!r}, trying again!".format(response))
             except PumpIOTimeOutError:
                 self.logger.debug("Timeout, trying again!")
-        self.logger.debug("Too many failed communication!")
+                continue
+
+            try:
+                return DTStatus(response)
+            except DTStatusDecodeError:
+                self.logger.debug("Decode error for {!r}, trying again!".format(response))
+
+        self.logger.warning("Failed to communicate, maximum number of retries exceeded!")
         raise ControllerRepeatedError('Repeated Error from pump {}'.format(self.name))
 
     def volume_to_step(self, volume_in_ml: float) -> int:
@@ -195,7 +198,9 @@ class PumpController(ABC):
 
         """
         report_status_packet = self._protocol.forge_report_status_packet()
-        (_, status, _) = self.write_and_read_from_pump(report_status_packet)
+        response = self._write_and_read_from_pump(report_status_packet)
+
+        status = response.status
         if status == pump_protocol.STATUS_IDLE_ERROR_FREE:
             return True
         elif status == pump_protocol.STATUS_BUSY_ERROR_FREE:
@@ -240,8 +245,8 @@ class PumpController(ABC):
 
         """
         initialized_packet = self._protocol.forge_report_initialized_packet()
-        (_, _, init_status) = self.write_and_read_from_pump(initialized_packet)
-        return bool(int(init_status))
+        response = self._write_and_read_from_pump(initialized_packet)
+        return bool(int(response.data))
 
     def smart_initialize(self, valve_position: str = None, secure: bool = True) -> None:
         """
@@ -297,7 +302,7 @@ class PumpController(ABC):
             wait: Whether or not to wait until the pump is idle, default set to True.
 
         """
-        self.write_and_read_from_pump(self._protocol.forge_initialize_valve_right_packet(operand_value))
+        self._write_and_read_from_pump(self._protocol.forge_initialize_valve_right_packet(operand_value))
         if wait:
             self.wait_until_idle()
 
@@ -311,7 +316,7 @@ class PumpController(ABC):
             wait: Whether or not to wait until the pump is idle, default set to True.
 
         """
-        self.write_and_read_from_pump(self._protocol.forge_initialize_valve_left_packet(operand_value))
+        self._write_and_read_from_pump(self._protocol.forge_initialize_valve_left_packet(operand_value))
         if wait:
             self.wait_until_idle()
 
@@ -332,7 +337,7 @@ class PumpController(ABC):
             else:
                 operand_value = 0
 
-        self.write_and_read_from_pump(self._protocol.forge_initialize_no_valve_packet(operand_value))
+        self._write_and_read_from_pump(self._protocol.forge_initialize_no_valve_packet(operand_value))
         if wait:
             self.wait_until_idle()
 
@@ -346,7 +351,7 @@ class PumpController(ABC):
             wait: Whether or not to wait until the pump is idle, default set to True.
 
         """
-        self.write_and_read_from_pump(self._protocol.forge_initialize_valve_only_packet(operand_string))
+        self._write_and_read_from_pump(self._protocol.forge_initialize_valve_only_packet(operand_string))
         if wait:
             self.wait_until_idle()
 
@@ -373,7 +378,7 @@ class PumpController(ABC):
 
         """
         self.micro_step_mode = micro_step_mode
-        self.write_and_read_from_pump(self._protocol.forge_microstep_mode_packet(micro_step_mode.value))
+        self._write_and_read_from_pump(self._protocol.forge_microstep_mode_packet(micro_step_mode.value))
 
     def check_top_velocity_within_range(self, top_velocity: int) -> bool:
         """
@@ -453,7 +458,7 @@ class PumpController(ABC):
             else:
                 self.logger.debug("Top velocity not set, change attempt {}/{}".format(i + 1, max_repeat))
             self.check_top_velocity_within_range(top_velocity)
-            self.write_and_read_from_pump(self._protocol.forge_top_velocity_packet(top_velocity))
+            self._write_and_read_from_pump(self._protocol.forge_top_velocity_packet(top_velocity))
             # if do not want to wait and check things went well, return now
             if secure is False:
                 return True
@@ -470,8 +475,8 @@ class PumpController(ABC):
 
         """
         top_velocity_packet = self._protocol.forge_report_peak_velocity_packet()
-        (_, _, top_velocity) = self.write_and_read_from_pump(top_velocity_packet)
-        return int(top_velocity)
+        response = self._write_and_read_from_pump(top_velocity_packet)
+        return int(response.data)
 
     def get_plunger_position(self) -> int:
         """
@@ -482,8 +487,8 @@ class PumpController(ABC):
 
         """
         plunger_position_packet = self._protocol.forge_report_plunger_position_packet()
-        (_, _, steps) = self.write_and_read_from_pump(plunger_position_packet)
-        return int(steps)
+        response = self._write_and_read_from_pump(plunger_position_packet)
+        return int(response.data)
 
     @property
     def current_steps(self) -> int:
@@ -586,7 +591,7 @@ class PumpController(ABC):
 
             steps_to_pump = self.volume_to_step(volume_in_ml)
             packet = self._protocol.forge_pump_packet(steps_to_pump)
-            self.write_and_read_from_pump(packet)
+            self._write_and_read_from_pump(packet)
 
             if wait:
                 self.wait_until_idle()
@@ -645,7 +650,7 @@ class PumpController(ABC):
 
             steps_to_deliver = self.volume_to_step(volume_in_ml)
             packet = self._protocol.forge_deliver_packet(steps_to_deliver)
-            self.write_and_read_from_pump(packet)
+            self._write_and_read_from_pump(packet)
 
             if wait:
                 self.wait_until_idle()
@@ -722,7 +727,7 @@ class PumpController(ABC):
 
             steps = self.volume_to_step(volume_in_ml)
             packet = self._protocol.forge_move_to_packet(steps)
-            self.write_and_read_from_pump(packet)
+            self._write_and_read_from_pump(packet)
 
             if wait:
                 self.wait_until_idle()
@@ -757,8 +762,8 @@ class PumpController(ABC):
 
         """
         valve_position_packet = self._protocol.forge_report_valve_position_packet()
-        (_, _, raw_valve_position) = self.write_and_read_from_pump(valve_position_packet)
-        return raw_valve_position
+        response = self._write_and_read_from_pump(valve_position_packet)
+        return response.data
 
     def get_valve_position(self, max_repeat: int = MAX_REPEAT_OPERATION) -> ValvePosition:
         """
@@ -823,7 +828,7 @@ class PumpController(ABC):
             else:
                 raise ValueError('Valve position unknown: {}'.format(valve_position))
 
-            self.write_and_read_from_pump(valve_position_packet)
+            self._write_and_read_from_pump(valve_position_packet)
 
             # if do not want to wait and check things went well, return now
             if secure is False:
@@ -843,10 +848,10 @@ class PumpController(ABC):
 
         """
         eeprom_config_packet = self._protocol.forge_eeprom_config_packet(operand_value)
-        self.write_and_read_from_pump(eeprom_config_packet)
+        self._write_and_read_from_pump(eeprom_config_packet)
 
         eeprom_sign_packet = self._protocol.forge_eeprom_lowlevel_config_packet(sub_command=20, operand_value="pycont1")
-        self.write_and_read_from_pump(eeprom_sign_packet)
+        self._write_and_read_from_pump(eeprom_sign_packet)
 
         if operand_value == 1:
             print("####################################################")
@@ -868,7 +873,7 @@ class PumpController(ABC):
 
         """
         eeprom_packet = self._protocol.forge_eeprom_lowlevel_config_packet(sub_command=command, operand_value=operand)
-        self.write_and_read_from_pump(eeprom_packet)
+        self._write_and_read_from_pump(eeprom_packet)
 
     def flash_eeprom_3_way_y_valve(self) -> None:
         """
@@ -905,8 +910,8 @@ class PumpController(ABC):
             eeprom_config: The configuration of the EEPROM.
 
         """
-        (_, _, eeprom_config) = self.write_and_read_from_pump(self._protocol.forge_report_eeprom_packet())
-        return eeprom_config
+        response = self._write_and_read_from_pump(self._protocol.forge_report_eeprom_packet())
+        return response.data
 
     def get_current_valve_config(self) -> str:
         """
@@ -939,7 +944,7 @@ class PumpController(ABC):
         """
         Sends the command to terminate the current action.
         """
-        self.write_and_read_from_pump(self._protocol.forge_terminate_packet())
+        self._write_and_read_from_pump(self._protocol.forge_terminate_packet())
 
 
 

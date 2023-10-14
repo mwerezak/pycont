@@ -402,7 +402,7 @@
         <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">pump_io</span><span class="p">,</span> <span class="n">pump_name</span><span class="p">,</span> <span class="o">**</span><span class="n">pump_config</span><span class="p">)</span></div>
 
     <span class="c">##</span>
-<div class="viewcode-block" id="PumpController.write_and_read_from_pump"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.write_and_read_from_pump">[docs]</a>    <span class="k">def</span> <span class="nf">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_WRITE_AND_READ</span><span class="p">):</span>
+<div class="viewcode-block" id="PumpController._write_and_read_from_pump"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController._write_and_read_from_pump">[docs]</a>    <span class="k">def</span> <span class="nf">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_WRITE_AND_READ</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes packets to and reads the response from the pump.</span>
 
@@ -476,7 +476,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">report_status_packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_report_status_packet</span><span class="p">()</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">report_status_packet</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">report_status_packet</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">pump_protocol</span><span class="o">.</span><span class="n">STATUS_IDLE_ERROR_FREE</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">True</span>
         <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">pump_protocol</span><span class="o">.</span><span class="n">STATUS_BUSY_ERROR_FREE</span><span class="p">:</span>
@@ -518,7 +518,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">initialized_packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_report_initialized_packet</span><span class="p">()</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">init_status</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">initialized_packet</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">init_status</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">initialized_packet</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">init_status</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PumpController.smart_initialize"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.smart_initialize">[docs]</a>    <span class="k">def</span> <span class="nf">smart_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_position</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
@@ -575,7 +575,7 @@
 <span class="sd">            wait (bool): Whether or not to wait until the pump is idle, default set to True.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_valve_right_packet</span><span class="p">(</span><span class="n">operand_value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_valve_right_packet</span><span class="p">(</span><span class="n">operand_value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
@@ -589,7 +589,7 @@
 <span class="sd">            wait (bool): Whether or not to wait until the pump is idle, default set to True.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_valve_right_packet</span><span class="p">(</span><span class="n">operand_value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_valve_right_packet</span><span class="p">(</span><span class="n">operand_value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
@@ -603,7 +603,7 @@
 <span class="sd">            wait (bool): Whether or not to wait until the pump is idle, default set to True.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_no_valve_packet</span><span class="p">(</span><span class="n">operand_value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_no_valve_packet</span><span class="p">(</span><span class="n">operand_value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
@@ -617,7 +617,7 @@
 <span class="sd">            wait (bool): Whether or not to wait until the pump is idle, default set to True.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_valve_only_packet</span><span class="p">(</span><span class="n">operand_string</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_initialize_valve_only_packet</span><span class="p">(</span><span class="n">operand_string</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span></div>
 
@@ -649,7 +649,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_microstep_mode_packet</span><span class="p">(</span><span class="n">micro_step_mode</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_microstep_mode_packet</span><span class="p">(</span><span class="n">micro_step_mode</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ControllerInitError</span><span class="p">(</span><span class="s">&#39;Pump should be initialized before set_microstep_mode&#39;</span><span class="p">)</span></div>
 
@@ -737,7 +737,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Top velocity not set, change attempt {}/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_repeat</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">check_top_velocity_within_range</span><span class="p">(</span><span class="n">top_velocity</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_top_velocity_packet</span><span class="p">(</span><span class="n">top_velocity</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_top_velocity_packet</span><span class="p">(</span><span class="n">top_velocity</span><span class="p">))</span>
                 <span class="c"># if do not want to wait and check things went well, return now</span>
                 <span class="k">if</span> <span class="n">secure</span> <span class="o">==</span> <span class="k">False</span><span class="p">:</span>
                     <span class="k">return</span> <span class="k">True</span>
@@ -756,7 +756,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">top_velocity_packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_report_peak_velocity_packet</span><span class="p">()</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">top_velocity_packet</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">top_velocity</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">top_velocity_packet</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">top_velocity</span><span class="p">)</span></div>
 
     <span class="c">##</span>
@@ -769,7 +769,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plunger_position_packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_report_plunger_position_packet</span><span class="p">()</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">plunger_position_packet</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">plunger_position_packet</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
@@ -873,7 +873,7 @@
 
             <span class="n">steps_to_pump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_to_step</span><span class="p">(</span><span class="n">volume_in_ml</span><span class="p">)</span>
             <span class="n">packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_pump_packet</span><span class="p">(</span><span class="n">steps_to_pump</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span>
@@ -929,7 +929,7 @@
 
             <span class="n">steps_to_deliver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_to_step</span><span class="p">(</span><span class="n">volume_in_ml</span><span class="p">)</span>
             <span class="n">packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_deliver_packet</span><span class="p">(</span><span class="n">steps_to_deliver</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span>
@@ -1009,7 +1009,7 @@
 
             <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_to_step</span><span class="p">(</span><span class="n">volume_in_ml</span><span class="p">)</span>
             <span class="n">packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_move_to_packet</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span>
@@ -1045,7 +1045,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">valve_position_packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_report_valve_position_packet</span><span class="p">()</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">raw_valve_position</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">valve_position_packet</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">raw_valve_position</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">valve_position_packet</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">raw_valve_position</span></div>
 
 <div class="viewcode-block" id="PumpController.get_valve_position"><a class="viewcode-back" href="../../pycont.html#pycont.controller.PumpController.get_valve_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_valve_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_repeat</span><span class="o">=</span><span class="n">MAX_REPEAT_OPERATION</span><span class="p">):</span>
@@ -1113,7 +1113,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Valve position {} unknown&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">valve_position</span><span class="p">))</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">valve_position_packet</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">valve_position_packet</span><span class="p">)</span>
 
             <span class="c"># if do not want to wait and check things went well, return now</span>
             <span class="k">if</span> <span class="n">secure</span> <span class="o">==</span> <span class="k">False</span><span class="p">:</span>
@@ -1133,7 +1133,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">eeprom_config_packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_eeprom_config_packet</span><span class="p">(</span><span class="n">operand_value</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="n">eeprom_config_packet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="n">eeprom_config_packet</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">operand_value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s">&quot;####################################################&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s">&quot;3-Way Y-Valve: Connect jumper to pin 5 (bottom pin) below address switch at back of pump&quot;</span><span class="p">)</span>
@@ -1176,7 +1176,7 @@
 <span class="sd">            eeprom_config (int): The configuration of the EEPROM.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">eeprom_config</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_report_eeprom_packet</span><span class="p">())</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">eeprom_config</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_read_from_pump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">forge_report_eeprom_packet</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">eeprom_config</span></div></div>
 
 

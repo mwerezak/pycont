@@ -149,19 +149,6 @@ class PumpProtocol:
             dtcommands.append(dtprotocol.DTCommand(CMD_EXECUTE))
         return dtprotocol.DTInstructionPacket(self.address, dtcommands)
 
-    # handling answers
-    def decode_packet(self, dtresponse: bytes) -> Optional[Tuple[str, str, str]]:
-        """
-        Decodes the response packet form the device.
-
-        Args:
-            dtresponse: The response from the device.
-
-        Returns:
-            DTStatus: The decoded status of the device.
-
-        """
-        return dtprotocol.DTStatus(dtresponse).decode()
 
     """
 

@@ -60,9 +60,6 @@ class VirtualController(PumpController):
     def number_of_steps(self) -> int:
         return 3000
 
-    def write_and_read_from_pump(self, packet, max_repeat=MAX_REPEAT_WRITE_AND_READ):
-        raise NotImplementedError
-
     def initialize(self, valve_position=None, max_repeat=MAX_REPEAT_OPERATION, secure=True):
         raise NotImplementedError
 
