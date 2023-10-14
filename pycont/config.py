@@ -147,7 +147,7 @@ class PumpConfig:
 
 @dataclass(frozen=True)
 class BusConfig:
-    connection: Union[SerialConfig, SocketConfig]
+    io_config: Union[SerialConfig, SocketConfig]
     pumps: Collection[PumpConfig]
 
     @classmethod
@@ -159,7 +159,7 @@ class BusConfig:
             pumps.append(PumpConfig.from_dict(pump_name, full_pump_config))
 
         return cls(
-            connection = cls._io_config_from_dict(bus_config['io']),
+            io_config = cls._io_config_from_dict(bus_config['io']),
             pumps = tuple(pumps),
         )
 

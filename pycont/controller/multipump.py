@@ -35,7 +35,7 @@ class MultiPumpController(object):
 
         for bus_config in config:
             pump_io = PumpIO()
-            pump_io.open_connection(bus_config.connection)
+            pump_io.open(bus_config.io_config)
 
             for pump_config in bus_config.pumps:
                 self.pumps[pump_config.name] = pump_config.create_pump(pump_io)

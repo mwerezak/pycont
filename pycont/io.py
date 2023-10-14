@@ -32,11 +32,21 @@ class SerialConfig:
     baudrate: int = DEFAULT_IO_BAUDRATE
     timeout: float = DEFAULT_IO_TIMEOUT
 
+    def open_serial(self) -> serial.Serial:
+        return serial.Serial(self.port, self.baudrate, self.timeout)
+
 @dataclass(frozen=True)
 class SocketConfig:
     hostname: str
     port: int
     timeout: float = DEFAULT_IO_TIMEOUT
+
+    def open_socket(self) -> socket.socket:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(self.timeout)
+        sock.connect((self.hostname, self.port))
+        return sock
+
 
 class PumpIO:
     """
@@ -47,10 +57,12 @@ class PumpIO:
 
     def __init__(self, serial = None):
         self.logger = create_logger(self.__class__.__name__)
-
         self.lock = threading.Lock()
 
-        self._serial = serial
+        if isinstance(serial, (SerialConfig, SocketConfig)):
+            self.open(serial)
+        else:
+            self._serial = serial
 
     def __del__(self):
         """
@@ -86,44 +98,13 @@ class PumpIO:
 
         return info
 
-    def open_connection(self, config: Union[SerialConfig, SocketConfig]) -> None:
+    def open(self, config: Union[SerialConfig, SocketConfig]) -> None:
         if isinstance(config, SerialConfig):
-            self.open_serial(config.port, config.baudrate, config.timeout)
+            self._serial = config.open_serial()
         elif isinstance(config, SocketConfig):
-            self.open_socket(config.hostname, config.port, config.timeout)
+            self._serial = SocketBridge(config.open_socket())
         else:
             ValueError(f"invalid I/O config: {type(config)}")
-
-    def open_serial(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
-        """
-        Opens a communication with the hardware.
-
-        Args:
-            port: The port number on which the communication will take place.
-
-            baudrate: The baudrate of the communication, default set to DEFAULT_IO_BAUDRATE(9600).
-
-            timeout: The timeout of the communication, default set to DEFAULT_IO_TIMEOUT(1).
-
-        """
-        self._serial = serial.Serial(port, baudrate, timeout=timeout)
-        self.logger.debug("Opening port '%s'", self._serial, extra=self._debug_info())
-
-    def open_socket(self, hostname: str, port: int, timeout: float = DEFAULT_IO_TIMEOUT) -> None:
-        """
-        Opens a communication with the hardware over a network socket.
-
-        Args:
-            hostname: The hostname with which the communication will take place.
-
-            port: The port number on which the communication will take place.
-
-            timeout: The timeout of the communication, default set to DEFAULT_IO_TIMEOUT(1).
-
-        """
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((hostname, port))
-        self._serial = SocketBridge(sock)
         self.logger.debug("Opening port '%s'", self._serial, extra=self._debug_info())
 
     def close(self) -> None:
