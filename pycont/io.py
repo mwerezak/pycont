@@ -149,7 +149,7 @@ class PumpIO:
         self.logger.debug("Sending {!r}".format(str_to_send))
         self._serial.write(str_to_send)
 
-    def readline(self) -> bytes:
+    def _readline(self) -> bytes:
         """
         Reads a line from the serial communication.
 
@@ -187,7 +187,7 @@ class PumpIO:
         self.flush_input()
         self.write(packet)
         try:
-            response = self.readline()
+            response = self._readline()
             self.lock.release()
             return response
         except PumpIOTimeOutError as err:
