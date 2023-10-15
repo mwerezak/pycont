@@ -5,19 +5,28 @@
 
 from __future__ import annotations
 
+import time
 import serial
 import socket
+import select
 import threading
-from dataclasses import dataclass
+from collections import defaultdict, deque
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from ._logger import create_logger
+from .config import Address
 
-#: Represents the Broadcast of the C3000
-from .dtprotocol import DTInstructionPacket
+from .dtprotocol import (
+   DTInstructionPacket,
+   DTStatus,
+   DTStatusDecodeError,
+   DTStart,
+   DTStop,
+)
 
 if TYPE_CHECKING:
-    from typing import Union, Optional, Any
+    from typing import Optional, Any
 
 
 #: default Input/Output (I/O) Baudrate
@@ -26,43 +35,57 @@ DEFAULT_IO_BAUDRATE = 9600
 #: Default timeout for I/O operations
 DEFAULT_IO_TIMEOUT = 1.0
 
-@dataclass(frozen=True)
-class SerialConfig:
-    port: str
-    baudrate: int = DEFAULT_IO_BAUDRATE
-    timeout: float = DEFAULT_IO_TIMEOUT
 
-    def open_serial(self) -> serial.Serial:
-        return serial.Serial(self.port, self.baudrate, self.timeout)
-
-@dataclass(frozen=True)
-class SocketConfig:
-    hostname: str
-    port: int
-    timeout: float = DEFAULT_IO_TIMEOUT
-
-    def open_socket(self) -> socket.socket:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(self.timeout)
-        sock.connect((self.hostname, self.port))
-        return sock
-
-
-class PumpIO:
+class PumpIOTimeOutError(Exception):
     """
-    This class deals with the pump I/O instructions.
+    Exception for when the response time is greater than the timeout threshold.
     """
+    pass
 
-    _serial: Optional[Union[serial.serialposix.Serial, serial.serialwin32.Serial, SocketBridge]]
 
-    def __init__(self, serial = None):
-        self.logger = create_logger(self.__class__.__name__)
-        self.lock = threading.Lock()
+class PumpIO(ABC):
+    @abstractmethod
+    def send_packet(self, packet: DTInstructionPacket) -> None:
+        """Send a packet without waiting for the response. Any response will be discarded."""
+        raise NotImplementedError
 
-        if isinstance(serial, (SerialConfig, SocketConfig)):
-            self.open(serial)
-        else:
-            self._serial = serial
+    @abstractmethod
+    def send_packet_and_read_response(self, packet: DTInstructionPacket) -> DTStatus:
+        """Send a packet and return the first response addressed from the same bus address to which the packet was sent.
+
+        Raises:
+            PumpIOTimeOutError: If no response was received before the timeout period expired.
+        """
+        raise NotImplementedError
+
+
+class SerialIO(PumpIO):
+    """
+    Pump I/O communication over a serial port.
+
+    This class is thread-safe. Each of the PumpIO methods can be called from different threads.
+    Different threads can communicate concurrently with different bus addresses using the same
+    SerialIO instance.
+
+    If a thread tries to communicate with a bus address while another thread is waiting for a
+    response from the same address (i.e. two threads are trying to communicate with the *same*
+    bus address), the second will be blocked until the first receives it's response (or timeout)."""
+
+    _serial: serial.Serial = None
+    _skipped: defaultdict[Address, deque[DTStatus]]
+    _session_lock: defaultdict[Address, threading.Lock]
+
+    def __init__(self, port: str, baudrate: int = DEFAULT_IO_BAUDRATE, timeout: float = DEFAULT_IO_TIMEOUT):
+        self.port = port
+        self.baudrate = baudrate
+        self.timeout = timeout
+
+        self._log = create_logger(self.__class__.__name__)
+        self._skipped = defaultdict(deque)
+        self._io_lock = threading.Lock() # this lock protects both _serial and _skipped
+        self._session_lock = defaultdict(threading.Lock)
+
+        self.open()
 
     def __del__(self):
         """
@@ -84,28 +107,14 @@ class PumpIO:
         """
         self.close()
 
-    def _debug_info(self) -> dict[str, Any]:
-        info = { }
-
-        if isinstance(self._serial, serial.Serial):
-            info['port'] = self._serial.port
-            info['baudrate'] = self._serial.baudrate
-            info['timeout'] = self._serial.timeout
-
-        if isinstance(self._serial, SocketBridge):
-            info['hostname'] = self._serial.hostname
-            info['port'] = self._serial.port
-
-        return info
-
-    def open(self, config: Union[SerialConfig, SocketConfig]) -> None:
-        if isinstance(config, SerialConfig):
-            self._serial = config.open_serial()
-        elif isinstance(config, SocketConfig):
-            self._serial = SocketBridge(config.open_socket())
-        else:
-            ValueError(f"invalid I/O config: {type(config)}")
-        self.logger.debug("Opening port '%s'", self._serial, extra=self._debug_info())
+    def open(self) -> None:
+        """
+        Opens communication with the hardware.
+        """
+        # use non-blocking reads, so timeout is set to 0
+        # the timeout attribute on self only applies to send_packet_and_read_response() and is handled there.
+        self._serial = serial.Serial(self.port, self.baudrate, timeout=0)
+        self._log.debug("Opening port '%s'", self._serial, extra=self._debug_info())
 
     def close(self) -> None:
         """
@@ -115,8 +124,8 @@ class PumpIO:
         # Or if the PumpIO never opened a connection.
         if self._serial is not None:
             self._serial.close()
-            self.logger.debug("Closing port '%s'", self._serial, extra=self._debug_info())
-            self._serial = None
+            self._log.debug("Closing port '%s'", self._serial, extra=self._debug_info())
+            del self._serial
 
     def is_connected(self) -> bool:
         return self._serial is not None
@@ -124,15 +133,14 @@ class PumpIO:
     def __bool__(self) -> bool:
         return self.is_connected()
 
-    def flush_input(self) -> None:
-        """
-        Flushes the input buffer of the serial communication.
-        """
-        if self._serial is None:
-            raise RuntimeError('no open connection')
-        self._serial.reset_input_buffer()
+    def _debug_info(self) -> dict[str, Any]:
+        return dict(
+            port = self._serial.port,
+            baudrate = self._serial.baudrate,
+            timeout = self._serial.timeout
+        )
 
-    def write(self, packet: DTInstructionPacket) -> None:
+    def send_packet(self, packet: DTInstructionPacket) -> None:
         """
         Writes a packet along the serial communication.
 
@@ -143,147 +151,136 @@ class PumpIO:
 
         """
         if self._serial is None:
-            raise RuntimeError('no open connection')
+            raise RuntimeError('connection is closed')
 
-        str_to_send = packet.to_string()
-        self.logger.debug("Sending {!r}".format(str_to_send))
-        self._serial.write(str_to_send)
+        # ALWAYS acquire the the session lock FIRST
+        with self._session_lock[packet.address]:
+            bytes_to_send = packet.to_string()
+            self._log.debug(f"Sending {bytes_to_send!r}")
+            with self._io_lock:
+                self._serial.write(bytes_to_send)
 
-    def _readline(self) -> bytes:
-        """
-        Reads a line from the serial communication.
-
-        Raises:
-            PumpIOTimeOutError: If the response time is greater than the timeout threshold.
-
-        """
+    def _read_response(self) -> Optional[DTStatus]:
         if self._serial is None:
-            raise RuntimeError('no open connection')
+            raise RuntimeError('connection is closed')
 
         msg = self._serial.readline()
-        if msg:
-            self.logger.debug("Received {}".format(msg))
-            return msg
-        else:
-            self.logger.debug("Readline timeout!")
-            raise PumpIOTimeOutError
+        if not msg:
+            return None
 
-    def write_and_readline(self, packet: DTInstructionPacket) -> bytes:
-        """
-        Writes a packet along the serial communication and waits for a response.
-
-        Args:
-            packet (DTInstructionPacket): The packet to be written.
-
-        .. note:: Unsure if this is the correct packet type (GAK).
-
-        Returns:
-            response: The received response.
-
-        Raises:
-            PumpIOTimeOutError: If the response time is greater than the timeout threshold.
-        """
-        self.lock.acquire()
-        self.flush_input()
-        self.write(packet)
         try:
-            response = self._readline()
-            self.lock.release()
-            return response
-        except PumpIOTimeOutError as err:
-            self.lock.release()
-            raise err
+            self._log.debug(F"Received {msg!r}")
+            return DTStatus(msg)
+        except DTStatusDecodeError:
+            self._log.warning(f"Failed to decode response: {msg!r}")
+            return None
 
-class PumpIOTimeOutError(Exception):
+    def _flush_all_responses_for_address(self, address: Address) -> None:
+        while True:
+            with self._io_lock:
+                response = self._read_response()
+                if response is None:
+                    break
+
+                if response.address != address:
+                    self._skipped[address].append(response)
+
+    def _get_next_response_for_address(self, address: Address) -> DTStatus:
+        start_time = time.time()
+        while (time.time() - start_time) < self.timeout:
+            with self._io_lock:
+                # first check to see if the response was received by another thread
+                if len(self._skipped[address]) > 0:
+                    return self._skipped[address].popleft()
+
+                # try to read a response from the device
+                while (response := self._read_response()) is not None:
+                    if response.address != address:
+                        self._skipped[response.address].append(response)
+                        continue
+                    return response
+
+            time.sleep(0.2)
+
+        self._log.debug("Timeout expired while waiting for response!")
+        raise PumpIOTimeOutError
+
+    def send_packet_and_read_response(self, packet: DTInstructionPacket) -> DTStatus:
+        if self._serial is None:
+            raise RuntimeError('connection is closed')
+
+        address = packet.address
+        with self._session_lock[address]:
+            # flush any incoming responses for this address before beginning the new command
+            self._flush_all_responses_for_address(address)
+            self._skipped[address].clear()
+
+            self.send_packet(packet)
+            return self._get_next_response_for_address(address)
+
+
+class SocketIO(PumpIO):
     """
-    Exception for when the response time is greater than the timeout threshold.
+    Pump I/O communication over a socket-serial bridge.
+
+    Not thread safe. If you need multiple threads then use a separate socket for each thread.
     """
-    pass
 
-
-import os
-import io
-import time
-from io import BytesIO
-
-class SocketBridge:
-    """Can be used with PumpIO to communicate over a socket-based serial bridge."""
-
-    def __init__(self, sock: socket):
+    def __init__(self, sock: socket.socket, timeout: float = DEFAULT_IO_TIMEOUT):
         self.socket = sock
-        self._buf = BytesIO()
+        self.timeout = timeout
 
-    @property
-    def hostname(self) -> str:
-        return self.socket.hostname
+        # use socket in nonblocking mode
+        self.socket.settimeout(0)
 
-    @property
-    def port(self) -> str:
-        return self.socket.port
+        self._buf = bytearray()
+        self._log = create_logger(self.__class__.__name__)
 
-    def _buf_pos(self) -> int:
-        return self._buf.tell()
-
-    def _buf_remaining(self) -> int:
-        return len(self._buf.getbuffer()) - self._buf.tell()
-
-    def _trim_buffer(self) -> None:
-        """Remove everything before the current buffer position"""
-        pos = self._buf_pos()
-        remaining = self._buf_remaining()
-        buf_mem = self._buf.getbuffer()
-        buf_mem[:remaining] = buf_mem[pos:pos+remaining]
-        self._buf.truncate(remaining)
-
-    _BUF_FILL = 4096
-    def readline(self, size: int = -1) -> bytes:
-        """Read and return one line from the stream. If size is specified, at most size bytes will be read."""
-
-        result = bytearray()
-
-        start = time.time()
-        timeout = self.socket.gettimeout()
-        while not result.endswith(b'\n') and (timeout is None or time.time() - start < timeout):
-            if self._buf_remaining() < self._BUF_FILL:
-                data = self.socket.recv(self._BUF_FILL)
-
-                pos = self._buf_pos()
-                try:
-                    self._buf.seek(0, io.SEEK_END)
-                    self._buf.write(data)
-                finally:
-                    self._buf.seek(pos)
-
-            result.extend(self._buf.readline(size))
-
-            if self._buf_pos() > self._BUF_FILL:
-                self._trim_buffer()
-
-        return bytes(result)
-
-    def write(self, data: Union[bytes, bytearray, memoryview]) -> int:
-        """Write the bytes data to the port."""
-        self.socket.sendall(data)
-        return len(data)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     def close(self) -> None:
         self.socket.close()
 
-    if os.name == 'nt':
-        _BLOCK_ERR = BlockingIOError
-    # add platform specific exceptions here
-    else:
-        raise ValueError(f'unknown blocking exception for os: {os.name!r}')
+    def send_packet(self, packet: DTInstructionPacket) -> None:
+        bytes_to_send = packet.to_string()
+        self._log.debug(f"Sending {bytes_to_send!r}")
+        self.socket.sendall(bytes_to_send)
 
-    def reset_input_buffer(self) -> None:
-        """Flush input buffer, discarding all its contents."""
-        # enter non-blocking mode and call recv() until we would block
-        timeout = self.socket.gettimeout()
-        try:
-            self.socket.settimeout(0)
-            while True:
-                self.socket.recv(1024)
-        except self._BLOCK_ERR:
+    def _extract_next_response_from_buffer(self, buf: bytearray) -> Optional[DTStatus]:
+        start_idx = buf.find(DTStart)
+        if start_idx < 0:
+            buf.clear()
+            return None
+
+        stop_idx = buf.find(DTStop, start_idx)
+        if stop_idx < 0:
+            return None
+
+        split_idx = stop_idx + len(DTStop)
+        response = buf[start_idx:split_idx]
+        del buf[:split_idx]
+        return DTStatus(response)
+
+    def _recv_status(self) -> Optional[DTStatus]:
+        ready = select.select([self.socket], (), (), 0)
+        if not ready:
+            return None
+
+        self._buf += self.socket.recv(4096)
+        return self._extract_next_response_from_buffer(self._buf)
+
+    def send_packet_and_read_response(self, packet: DTInstructionPacket) -> DTStatus:
+        # flush any previous responses
+        while self._recv_status() is not None:
             pass
-        finally:
-            self.socket.settimeout(timeout)
+
+        self.send_packet(packet)
+
+        start_time = time.time()
+        while (time.time() - start_time) < self.timeout:
+            response = self._recv_status()
+            if response is not None and response.address == packet.address:
+                return response
+
+        raise PumpIOTimeOutError
