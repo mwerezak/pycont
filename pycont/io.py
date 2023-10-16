@@ -76,6 +76,11 @@ class PumpIO(ABC):
             sockopts = opts.get('sockopts', ())
             for level, name, value in sockopts:
                 sock.setsockopt(level, name, value)
+
+            address = opts.get('address')
+            if address is not None:
+                sock.connect(address)
+
             return SocketIO(sock, timeout=opts.get('timeout', DEFAULT_IO_TIMEOUT))
 
         raise ValueError("unsupported I/O type: " + config.io_type)
