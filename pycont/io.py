@@ -61,7 +61,7 @@ class PumpIO(ABC):
 
     @staticmethod
     def from_config(config: IOConfig) -> PumpIO:
-        opts = dict(config.io_options)
+        opts = dict(config.options)
         if config.io_type == "serial":
             return SerialIO(**opts)
 
