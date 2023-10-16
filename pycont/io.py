@@ -266,17 +266,20 @@ class SocketIO(PumpIO):
         self._log.debug(f"Sending {bytes_to_send!r}")
         self.socket.sendall(bytes_to_send)
 
+    # why didn't they just use bytes?
+    _dtstart = DTStart.encode()
+    _dtstop = DTStop.encode()
     def _extract_next_response_from_buffer(self, buf: bytearray) -> Optional[DTStatus]:
-        start_idx = buf.find(DTStart)
+        start_idx = buf.find(self._dtstart)
         if start_idx < 0:
             buf.clear()
             return None
 
-        stop_idx = buf.find(DTStop, start_idx)
+        stop_idx = buf.find(self._dtstop, start_idx)
         if stop_idx < 0:
             return None
 
-        split_idx = stop_idx + len(DTStop)
+        split_idx = stop_idx + len(self._dtstop)
         response = buf[start_idx:split_idx]
         del buf[:split_idx]
         return DTStatus(response)
