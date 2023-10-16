@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import annotations
+
 import itertools
 from typing import TYPE_CHECKING
 
