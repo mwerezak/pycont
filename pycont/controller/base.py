@@ -145,15 +145,11 @@ class PumpController(ABC):
         for i in range(max_repeat):
             self.logger.debug("Write and read {}/{}".format(i + 1, max_repeat))
             try:
-                response = self._io.write_and_readline(packet)
+                return self._io.send_packet_and_read_response(packet)
             except PumpIOTimeOutError:
                 self.logger.debug("Timeout, trying again!")
-                continue
-
-            try:
-                return DTStatus(response)
-            except DTStatusDecodeError:
-                self.logger.debug("Decode error for {!r}, trying again!".format(response))
+            except DTStatusDecodeError as err:
+                self.logger.debug(f"Decode error, trying again! {err}")
 
         self.logger.warning("Failed to communicate, maximum number of retries exceeded!")
         raise ControllerRepeatedError('Repeated Error from pump {}'.format(self.name))
