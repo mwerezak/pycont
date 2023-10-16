@@ -10,12 +10,13 @@ import serial
 import socket
 import select
 import threading
+from contextlib import contextmanager
 from collections import defaultdict, deque
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from ._logger import create_logger
-from .config import Address
+from .config import Address, IOConfig
 
 from .dtprotocol import (
    DTInstructionPacket,
@@ -26,7 +27,7 @@ from .dtprotocol import (
 )
 
 if TYPE_CHECKING:
-    from typing import Optional, Any
+    from typing import Optional, Any, ContextManager
 
 
 #: default Input/Output (I/O) Baudrate
@@ -57,6 +58,27 @@ class PumpIO(ABC):
             PumpIOTimeOutError: If no response was received before the timeout period expired.
         """
         raise NotImplementedError
+
+    @staticmethod
+    def from_config(config: IOConfig) -> PumpIO:
+        opts = dict(config.io_options)
+        if config.io_type == "serial":
+            return SerialIO(**opts)
+
+        if config.io_type == "tcp_client":
+            return TCPClientIO(**opts)
+
+        if config.io_type == "socket":
+            sock = socket.socket(
+                family = opts.get('family', socket.AF_INET),
+                type = opts.get('sock_type', socket.SOCK_STREAM)
+            )
+            sockopts = opts.get('sockopts', ())
+            for level, name, value in sockopts:
+                sock.setsockopt(level, name, value)
+            return SocketIO(sock, timeout=opts.get('timeout', DEFAULT_IO_TIMEOUT))
+
+        raise ValueError("unsupported I/O type: " + config.io_type)
 
 
 class SerialIO(PumpIO):
@@ -284,3 +306,32 @@ class SocketIO(PumpIO):
                 return response
 
         raise PumpIOTimeOutError
+
+class TCPClientIO(PumpIO):
+    """
+    Communicate over using a TCP socket, except that a new connection is created for each packet.
+    """
+    def __init__(self, hostname: str, port: int, timeout: float = DEFAULT_IO_TIMEOUT):
+        self.hostname = hostname
+        self.port = port
+        self.timeout = timeout
+        self._log = create_logger(self.__class__.__name__)
+
+    @contextmanager
+    def _open_connection(self) -> ContextManager[SocketIO]:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((self.hostname, self.port))
+        try:
+            sock_io = SocketIO(sock, timeout=self.timeout)
+            sock_io._log = self._log
+            yield sock_io
+        finally:
+            sock.close()
+
+    def send_packet(self, packet: DTInstructionPacket) -> None:
+        with self._open_connection() as sock_io:
+            sock_io.send_packet(packet)
+
+    def send_packet_and_read_response(self, packet: DTInstructionPacket) -> DTStatus:
+        with self._open_connection() as sock_io:
+            return sock_io.send_packet_and_read_response(packet)

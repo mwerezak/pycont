@@ -9,11 +9,10 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .io import SerialConfig, SocketConfig
 from ._models import get_controller_for_model
 
 if TYPE_CHECKING:
-    from typing import Union, Optional, Type
+    from typing import Any, Optional, Type
     from collections.abc import Collection
     from .io import PumpIO
     from .controller import PumpController
@@ -146,8 +145,14 @@ class PumpConfig:
 
 
 @dataclass(frozen=True)
+class IOConfig:
+    """See :meth:`PumpIO.from_config`"""
+    io_type: str
+    options: tuple[tuple[str, Any]]
+
+@dataclass(frozen=True)
 class BusConfig:
-    io_config: Union[SerialConfig, SocketConfig]
+    io_config: IOConfig
     pumps: Collection[PumpConfig]
 
     @classmethod
@@ -164,11 +169,10 @@ class BusConfig:
         )
 
     @staticmethod
-    def _io_config_from_dict(io_config: dict) -> Union[SocketConfig, SerialConfig]:
+    def _io_config_from_dict(io_config: dict) -> IOConfig:
         io_type = io_config.pop('type') if 'type' in io_config else 'serial'
-        if io_type == 'serial':
-            return SerialConfig(**io_config)
-        elif io_type == 'socket':
-            return  SocketConfig(**io_config)
-        else:
-            raise ValueError("unsupported I/O type: " + io_type)
+        # noinspection PyTypeChecker
+        return IOConfig(
+            io_type,
+            tuple(io_config.items()),
+        )
