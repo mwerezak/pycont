@@ -84,6 +84,7 @@ class Address(Enum):
     SwitchD = '>'
     SwitchE = '?'
     SwitchF = '@'
+    Master = '0',
     Broadcast = '_',
 
     @classmethod

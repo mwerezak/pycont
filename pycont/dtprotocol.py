@@ -7,12 +7,11 @@ from ._logger import create_logger
 from .config import Address
 
 if TYPE_CHECKING:
-    from typing import Any, Union
     from collections.abc import Sequence
+
 
 DTStart = '/'
 DTStop = '\r'
-
 
 class DTCommand(object):
 
@@ -92,16 +91,15 @@ class DTStatus(object):
         except UnicodeDecodeError:
             raise DTStatusDecodeError('Could not decode {!r}'.format(response)) from None
 
-        self.address, self.status, self.data = self._extract_response_parts(raw_response)
+        self.status = None
+        self.data = None
+        self._extract_response_parts(raw_response)
 
-    def _extract_response_parts(self, response: str) -> tuple[Union[Address, str], str, str]:
+    def _extract_response_parts(self, response: str) -> None:
         info = response.rstrip().rstrip('\x03').lstrip(DTStart)
 
-        address = info[0]
-        try:
-            address = Address(address)
-        except ValueError:
-            self.logger.warning(f"Invalid address {info[0]!r}")
+        self.address = info[0]
+        if self.address == Address.Master.value:
+            self.status, self.data = info[1], info[2:]
 
-        return address, info[1], info[2:]  # address, status, data
 
