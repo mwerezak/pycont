@@ -84,8 +84,8 @@ class Address(Enum):
     SwitchD = '>'
     SwitchE = '?'
     SwitchF = '@'
-    Master = '0',
-    Broadcast = '_',
+    Master = '0'
+    Broadcast = '_'
 
     @classmethod
     def from_switch(cls, switch: str) -> Address:
