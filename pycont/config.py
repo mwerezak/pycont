@@ -9,50 +9,14 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from .pump_protocol import Address, ValvePosition
 from ._models import get_controller_for_model
 
 if TYPE_CHECKING:
-    from typing import Any, Optional, Type
+    from typing import Any, Type
     from collections.abc import Collection
     from .io import PumpIO
     from .controller import PumpController
-
-class ValvePosition(Enum):
-    Input = 'i'
-    Output = 'o'
-    Bypass = 'b'
-    Extra = 'e'
-
-    One = '1'
-    Two = '2'
-    Three = '3'
-    Four = '4'
-    Five = '5'
-    Six = '6'
-
-    def is_6way(self) -> bool:
-        return self in _VALVE_6WAY_LIST
-
-    @classmethod
-    def get_6way_position(cls, pos_num: int) -> ValvePosition:
-        """Get the corresponding 6-way valve position for integers 1..6"""
-        return _VALVE_6WAY_LIST[pos_num - 1]
-
-    @classmethod
-    def try_decode(cls, raw_pos: str) -> Optional[ValvePosition]:
-        if raw_pos in cls.__members__ .values():
-            return cls(raw_pos)
-        return None
-
-#: 6 way valve
-_VALVE_6WAY_LIST = (
-    ValvePosition.One,
-    ValvePosition.Two,
-    ValvePosition.Three,
-    ValvePosition.Four,
-    ValvePosition.Five,
-    ValvePosition.Six,
-)
 
 
 class Microstep(Enum):
@@ -67,48 +31,6 @@ _N_STEP_MODE = {
     Microstep.Mode2 : 8,
 }
 
-class Address(Enum):
-    Switch0 = '1'
-    Switch1 = '2'
-    Switch2 = '3'
-    Switch3 = '4'
-    Switch4 = '5'
-    Switch5 = '6'
-    Switch6 = '7'
-    Switch7 = '8'
-    Switch8 = '9'
-    Switch9 = ':'
-    SwitchA = ';'
-    SwitchB = '<'
-    SwitchC = '='
-    SwitchD = '>'
-    SwitchE = '?'
-    SwitchF = '@'
-    Master = '0'
-    Broadcast = '_'
-
-    @classmethod
-    def from_switch(cls, switch: str) -> Address:
-        return _ADDRESS_FROM_SWITCH[switch]
-
-_ADDRESS_FROM_SWITCH = {
-    '0' : Address.Switch0,
-    '1' : Address.Switch1,
-    '2' : Address.Switch2,
-    '3' : Address.Switch3,
-    '4' : Address.Switch4,
-    '5' : Address.Switch5,
-    '6' : Address.Switch6,
-    '7' : Address.Switch7,
-    '8' : Address.Switch8,
-    '9' : Address.Switch9,
-    'A' : Address.SwitchA,
-    'B' : Address.SwitchB,
-    'C' : Address.SwitchC,
-    'D' : Address.SwitchD,
-    'E' : Address.SwitchE,
-    'F' : Address.SwitchF,
-}
 
 @dataclass(frozen=True, kw_only=True)
 class PumpConfig:

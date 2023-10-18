@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Type, Callable
-    from .base import PumpController
+    from .controller import PumpController
 
 
 #: Model registry

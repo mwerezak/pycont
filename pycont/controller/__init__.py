@@ -16,7 +16,7 @@ from .._models import pump_model
 
 from ..config import Microstep
 
-from .base import PumpController, ControllerRepeatedError, PumpHWError
+from .base import PumpController, MaxRetriesExceededError, PumpHardwareError
 
 
 @pump_model('C3000')
