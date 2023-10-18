@@ -4,115 +4,160 @@
    :synopsis: A module which outlines the protocol for which the pumps will follow.
 
 .. moduleauthor:: Jonathan Grizou <Jonathan.Grizou@gla.ac.uk>
+.. moduleauthor:: Mike Werezak <mike.werezak@nrcan-rncan.gc.ca>
 
 """
 # -*- coding: utf-8 -*-
-from typing import List, Union, Optional, Tuple
+
+from __future__ import annotations
+
+from enum import Enum
+from typing import TYPE_CHECKING, NamedTuple
 
 from ._logger import create_logger
+from .dtprotocol import (
+    DTCommand, DTInstructionPacket, Address,
+)
 
-from . import dtprotocol
+if TYPE_CHECKING:
+    from typing import Optional
 
-#: Command to execute
-CMD_EXECUTE = 'R'
-#: Command to initialise with the right valve position as output
-CMD_INITIALIZE_VALVE_RIGHT = 'Z'
-#: Command to initialise with the left valve position as output
-CMD_INITIALIZE_VALVE_LEFT = 'Y'
-#: Command to initialise with no valve
-CMD_INITIALIZE_NO_VALVE = 'W'
-#: Command to initialise with valves only
-CMD_INITIALIZE_VALVE_ONLY = 'w'
-#: Command to invoke microstep mode
-CMD_MICROSTEPMODE = 'N'
-#: Command to move the pump to a location
-CMD_MOVE_TO = 'A'
-#: Command to access a specific pump
-CMD_PUMP = 'P'
-#: Command to deliver payload
-CMD_DELIVER = 'D'
-#: Command to achieve top velocity
-CMD_TOPVELOCITY = 'V'
-#: Command to access the EEPROM configuration
-CMD_EEPROM_CONFIG = 'U'      # Requires power restart to take effect
-CMD_EEPROM_LOWLEVEL_CONFIG = 'u'      # Requires power restart to take effect
-#: Command to terminate current operation
-CMD_TERMINATE = 'T'
 
-#: Command for the valve init_all_pump_parameters
-#: .. note:: Depending on EEPROM settings (U4 or U11) 4-way distribution valves either use IOBE or I<n>O<n>
-CMD_VALVE_INPUT = 'I'   # Depending on EEPROM settings (U4 or U11) 4-way distribution valves either use IOBE or I<n>O<n>
-#: Command for the valve output
-CMD_VALVE_OUTPUT = 'O'
-#: Command for the valve bypass
-CMD_VALVE_BYPASS = 'B'
-#: Command for the extra valve
-CMD_VALVE_EXTRA = 'E'
+#: Pump Command Set
+class PumpCommand(Enum):
+    #: Command to execute
+    Execute = 'R'
+    #: Command to initialise with the right valve position as output
+    InitValveRight = 'Z'
+    #: Command to initialise with the left valve position as output
+    InitValveLeft = 'Y'
+    #: Command to initialise with no valve
+    InitNoValve = 'W'
+    #: Command to initialise with valves only
+    InitValveOnly = 'w'
+    #: Command to invoke microstep mode
+    MicroStepMode = 'N'
+    #: Command to move the pump to a location
+    MoveAbsolute = 'A'
+    #: Command to access a specific pump
+    MovePickup = 'P'
+    #: Command to deliver payload
+    MoveDeliver = 'D'
+    #: Command to achieve top velocity
+    SetTopVelocity = 'V'
+    #: Command to access the EEPROM configuration
+    SetEEPROMPumpConfig = 'U'      # Requires power restart to take effect
+    SetEEPROMLowLevelParam = 'u'      # Requires power restart to take effect
+    #: Command to terminate current operation
+    Terminate = 'T'
 
-#: Command for the reporting the status
-CMD_REPORT_STATUS = 'Q'
-#: Command for reporting hte plunger position
-CMD_REPORT_PLUNGER_POSITION = '?'
-#: Command for reporting the start velocity
-CMD_REPORT_START_VELOCITY = '?1'
-#: Command for reporting the peak velocity
-CMD_REPORT_PEAK_VELOCITY = '?2'
-#: Command for reporting the cutoff velocity
-CMD_REPORT_CUTOFF_VELOCITY = '?3'
-#: Command for reporting the valve position
-CMD_REPORT_VALVE_POSITION = '?6'
-#: Command for reporting initialisation
-CMD_REPORT_INTIALIZED = '?19'
-#: Command for reporting the EEPROM
-CMD_REPORT_EEPROM = '?27'
-#: Command for reporting the status of J2-5 for 3 way-Y valve (i.e. 120 deg rotation)
-CMD_REPORT_JUMPER_3WAY = '?28'
+    #: Command for the valve init_all_pump_parameters
+    #: .. note:: Depending on EEPROM settings (U4 or U11) 4-way distribution valves either use IOBE or I<n>O<n>
+    SelectValveInput = 'I'   # Depending on EEPROM settings (U4 or U11) 4-way distribution valves either use IOBE or I<n>O<n>
+    #: Command for the valve output
+    SelectValveOutput = 'O'
+    #: Command for the valve bypass
+    SelectValveBypass = 'B'
+    #: Command for the extra valve
+    SelectValveExtra = 'E'
 
-#: Idle status when there are no errors
-STATUS_IDLE_ERROR_FREE = '`'
-#: Busy status when there are no errors
-STATUS_BUSY_ERROR_FREE = '@'
+    #: Command for the reporting the status
+    ReportStatus = 'Q'
+    #: Command for reporting hte plunger position
+    ReportPlungerPosition = '?'
+    #: Command for reporting the start velocity
+    ReportStartVelocity = '?1'
+    #: Command for reporting the peak velocity
+    ReportTopVelocity = '?2'
+    #: Command for reporting the cutoff velocity
+    ReportCutoffVelocity = '?3'
+    #: Command for reporting the valve position
+    ReportValvePosition = '?6'
+    #: Command for reporting initialisation
+    ReportIsInitialized = '?19'
+    #: Command for reporting the EEPROM
+    ReportEEPROM = '?27'
+    #: Command for reporting the status of J2-5 for 3 way-Y valve (i.e. 120 deg rotation)
+    ReportJumper3Way = '?28'
 
-# ERROR STATUSES
-#: Idle status for initialization failure
-STATUS_IDLE_INIT_FAILURE = 'a'
-#: Busy status for initialization failure
-STATUS_BUSY_INIT_FAILURE = 'A'
-#: Idle status for invalid command
-STATUS_IDLE_INVALID_COMMAND = 'b'
-#: Busy status for invalid command
-STATUS_BUSY_INVALID_COMMAND = 'B'
-#: Idle status for invalid operand
-STATUS_IDLE_INVALID_OPERAND = 'c'
-#: Busy status for invalid operand
-STATUS_BUSY_INVALID_OPERAND = 'C'
-#: Idle status for EEPROM failure
-STATUS_IDLE_EEPROM_FAILURE = 'f'
-#: Busy status for EEPROM failure
-STATUS_BUSY_EEPROM_FAILURE = 'F'
-#: Idle status for pump not initialized
-STATUS_IDLE_NOT_INITIALIZED = 'g'
-#: Busy status for pump not initialized
-STATUS_BUSY_NOT_INITIALIZED = 'G'
-#: Idle status for plunger overload error
-STATUS_IDLE_PLUNGER_OVERLOAD = 'i'
-#: Busy status for plunger overload error
-STATUS_BUSY_PLUNGER_OVERLOAD = 'I'
-#: Idle status for valve overload error
-STATUS_IDLE_VALVE_OVERLOAD = 'j'
-#: Busy status for plunger overload error
-STATUS_BUSY_VALVE_OVERLOAD = 'J'
-#: Idle status for plunger not allowed to move
-STATUS_IDLE_PLUNGER_STUCK = 'k'
-#: Busy status for plunger not allowed to move
-STATUS_BUSY_PLUNGER_STUCK = 'K'
+class StatusCode(Enum):
+    #: Idle/busy status when there are no errors
+    Ok = '`@'
+    #: Idle/busy status for initialization failure
+    InitFailure = 'aA'
+    #: Idle/busy status for invalid command
+    InvalidCommand = 'bB'
 
-ERROR_STATUSES_IDLE = (STATUS_IDLE_INIT_FAILURE, STATUS_IDLE_INVALID_COMMAND, STATUS_IDLE_INVALID_OPERAND,
-                       STATUS_IDLE_EEPROM_FAILURE, STATUS_IDLE_NOT_INITIALIZED, STATUS_IDLE_PLUNGER_OVERLOAD,
-                       STATUS_IDLE_VALVE_OVERLOAD, STATUS_IDLE_PLUNGER_STUCK)
-ERROR_STATUSES_BUSY = (STATUS_BUSY_INIT_FAILURE, STATUS_BUSY_INVALID_COMMAND, STATUS_BUSY_INVALID_OPERAND,
-                       STATUS_BUSY_EEPROM_FAILURE, STATUS_BUSY_NOT_INITIALIZED, STATUS_BUSY_PLUNGER_OVERLOAD,
-                       STATUS_BUSY_VALVE_OVERLOAD, STATUS_BUSY_PLUNGER_STUCK)
+    #: Idle/busy status for invalid operand
+    InvalidOperand = 'cC'
+    #: Idle/busy status for EEPROM failure
+    EEPROMFailure = 'fF'
+    #: Idle/busy status for pump not initialized
+    NotInitialized = 'gG'
+    #: Idle/busy status for plunger overload error
+    PlungerOverload = 'iI'
+    #: Idle/busy status for valve overload error
+    ValveOverload = 'jJ'
+    #: Idle/busy status for plunger not allowed to move
+    PlungerStuck = 'kK'
+
+    def is_error(self) -> bool:
+        return self is not StatusCode.Ok
+
+class PumpStatus(NamedTuple):
+    busy: bool
+    code: StatusCode
+
+    def is_error(self) -> bool:
+        return self.code.is_error()
+
+    @classmethod
+    def try_decode(cls, raw_code: str) -> Optional[PumpStatus]:
+        return _STATUS_DECODE.get(raw_code)
+
+_STATUS_DECODE = {
+    raw_code : PumpStatus(busy, status_code)
+    for status_code in StatusCode
+    for busy, raw_code in zip((False, True), status_code.value)
+}
+
+
+class ValvePosition(Enum):
+    Input = 'i'
+    Output = 'o'
+    Bypass = 'b'
+    Extra = 'e'
+
+    One = '1'
+    Two = '2'
+    Three = '3'
+    Four = '4'
+    Five = '5'
+    Six = '6'
+
+    def is_6way(self) -> bool:
+        return self in _VALVE_6WAY_LIST
+
+    @classmethod
+    def get_6way_position(cls, pos_num: int) -> ValvePosition:
+        """Get the corresponding 6-way valve position for integers 1..6"""
+        return _VALVE_6WAY_LIST[pos_num - 1]
+
+    @classmethod
+    def try_decode(cls, raw_pos: str) -> Optional[ValvePosition]:
+        if raw_pos in cls.__members__ .values():
+            return cls(raw_pos)
+        return None
+
+#: 6 way valve
+_VALVE_6WAY_LIST = (
+    ValvePosition.One,
+    ValvePosition.Two,
+    ValvePosition.Three,
+    ValvePosition.Four,
+    ValvePosition.Five,
+    ValvePosition.Six,
+)
 
 
 class PumpProtocol:
@@ -123,13 +168,11 @@ class PumpProtocol:
         address: Address of the pump.
 
     """
-    def __init__(self, address: str):
-        self.logger = create_logger(self.__class__.__name__)
-
+    def __init__(self, address: Address):
+        self._log = create_logger(self.__class__.__name__)
         self.address = address
 
-    def forge_packet(self, dtcommands: Union[List[dtprotocol.DTCommand], dtprotocol.DTCommand],
-                     execute: bool = True) -> dtprotocol.DTInstructionPacket:
+    def forge_packet(self, *dtcommands: DTCommand, execute: bool = True) -> DTInstructionPacket:
         """
         Creates a packet which will be sent to the device.
 
@@ -142,13 +185,12 @@ class PumpProtocol:
             DTInstructionPacket: The packet created.
 
         """
-        self.logger.debug("Forging packet with {} and execute set to {}".format(dtcommands, execute))
-        if isinstance(dtcommands, dtprotocol.DTCommand):
+        self._log.debug("Forging packet with {} and execute set to {}".format(dtcommands, execute))
+        if isinstance(dtcommands, DTCommand):
             dtcommands = [dtcommands]
         if execute:
-            dtcommands.append(dtprotocol.DTCommand(CMD_EXECUTE))
-        return dtprotocol.DTInstructionPacket(self.address, dtcommands)
-
+            dtcommands.append(DTCommand(PumpCommand.Execute))
+        return DTInstructionPacket(self.address, dtcommands)
 
     """
 
@@ -160,7 +202,7 @@ class PumpProtocol:
 
     # the functions below should be generated automatically but not really needed for now
 
-    def forge_initialize_valve_right_packet(self, operand_value: int = 0) -> dtprotocol.DTInstructionPacket:
+    def forge_initialize_valve_right_packet(self, operand_value: int = 0) -> DTInstructionPacket:
         """
         Creates a packet for initialising the right valve.
 
@@ -171,10 +213,10 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for initialising the right valve.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_INITIALIZE_VALVE_RIGHT, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.InitValveRight, str(operand_value))
         return self.forge_packet(dtcommand)
 
-    def forge_initialize_valve_left_packet(self, operand_value: int = 0) -> dtprotocol.DTInstructionPacket:
+    def forge_initialize_valve_left_packet(self, operand_value: int = 0) -> DTInstructionPacket:
         """
         Creates a packet for initialising the left valve.
 
@@ -185,10 +227,10 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for initialising the left valve.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_INITIALIZE_VALVE_LEFT, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.InitValveLeft, str(operand_value))
         return self.forge_packet(dtcommand)
 
-    def forge_initialize_no_valve_packet(self, operand_value: int = 0) -> dtprotocol.DTInstructionPacket:
+    def forge_initialize_no_valve_packet(self, operand_value: int = 0) -> DTInstructionPacket:
         """
         Creates a packet for initialising with no valves.
 
@@ -199,11 +241,11 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for initialising with no valves.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_INITIALIZE_NO_VALVE, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.InitNoValve, str(operand_value))
         return self.forge_packet(dtcommand)
 
     def forge_initialize_valve_only_packet(self, operand_string: Optional[str] = None)\
-            -> dtprotocol.DTInstructionPacket:
+            -> DTInstructionPacket:
         """
         Creates a packet for initialising with valves only.
 
@@ -214,10 +256,10 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for initialising with valves only
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_INITIALIZE_VALVE_ONLY, operand_string)
+        dtcommand = DTCommand(PumpCommand.InitValveOnly, operand_string)
         return self.forge_packet(dtcommand)
 
-    def forge_microstep_mode_packet(self, operand_value: int) -> dtprotocol.DTInstructionPacket:
+    def forge_microstep_mode_packet(self, operand_value: int) -> DTInstructionPacket:
         """
         Creates a packet for initialising microstep mode.
 
@@ -230,10 +272,10 @@ class PumpProtocol:
         """
         if operand_value not in list(range(3)):
             raise ValueError('Microstep operand must be in [0-2], you entered {}'.format(operand_value))
-        dtcommand = dtprotocol.DTCommand(CMD_MICROSTEPMODE, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.MicroStepMode, str(operand_value))
         return self.forge_packet(dtcommand)
 
-    def forge_move_to_packet(self, operand_value: int) -> dtprotocol.DTInstructionPacket:
+    def forge_move_to_packet(self, operand_value: int) -> DTInstructionPacket:
         """
         Creates a packet for moving the device to a location.
 
@@ -244,10 +286,10 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for moving the device to a location.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_MOVE_TO, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.MoveAbsolute, str(operand_value))
         return self.forge_packet(dtcommand)
 
-    def forge_pump_packet(self, operand_value: int) -> dtprotocol.DTInstructionPacket:
+    def forge_pump_packet(self, operand_value: int) -> DTInstructionPacket:
         """
         Creates a packet for the pump action of the device.
 
@@ -258,10 +300,10 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for the pump action of the device.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_PUMP, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.MovePickup, str(operand_value))
         return self.forge_packet(dtcommand)
 
-    def forge_deliver_packet(self, operand_value: int) -> dtprotocol.DTInstructionPacket:
+    def forge_deliver_packet(self, operand_value: int) -> DTInstructionPacket:
         """
         Creates a packet for delivering the payload.
 
@@ -272,10 +314,10 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for delivering the payload.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_DELIVER, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.MoveDeliver, str(operand_value))
         return self.forge_packet(dtcommand)
 
-    def forge_top_velocity_packet(self, operand_value: int) -> dtprotocol.DTInstructionPacket:
+    def forge_top_velocity_packet(self, operand_value: int) -> DTInstructionPacket:
         """
         Creates a packet for the top velocity of the device.
 
@@ -286,10 +328,10 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for the top velocity of the device.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_TOPVELOCITY, str(int(operand_value)))
+        dtcommand = DTCommand(PumpCommand.SetTopVelocity, str(int(operand_value)))
         return self.forge_packet(dtcommand)
 
-    def forge_eeprom_config_packet(self, operand_value: int) -> dtprotocol.DTInstructionPacket:
+    def forge_eeprom_config_packet(self, operand_value: int) -> DTInstructionPacket:
         """
         Creates a packet for accessing the EEPROM configuration of the device.
 
@@ -300,11 +342,11 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for accessing the EEPROM configuration of the device.
 
         """
-        dtcommand = dtprotocol.DTCommand(CMD_EEPROM_CONFIG, str(operand_value))
+        dtcommand = DTCommand(PumpCommand.SetEEPROMPumpConfig, str(operand_value))
         return self.forge_packet(dtcommand, execute=False)
 
     def forge_eeprom_lowlevel_config_packet(self, sub_command: int = 20, operand_value: str = "pycont1")\
-            -> dtprotocol.DTInstructionPacket:
+            -> DTInstructionPacket:
         """
         Creates a packet for accessing the EEPROM configuration of the device.
 
@@ -317,10 +359,10 @@ class PumpProtocol:
 
         """
 
-        dtcommand = dtprotocol.DTCommand(CMD_EEPROM_LOWLEVEL_CONFIG, str(sub_command) + "_" + str(operand_value))
+        dtcommand = DTCommand(PumpCommand.SetEEPROMLowLevelParam, str(sub_command) + "_" + str(operand_value))
         return self.forge_packet(dtcommand, execute=False)
 
-    def forge_valve_input_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_valve_input_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for the input into a valve on the device.
 
@@ -328,9 +370,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for the input into a valve on the device.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_VALVE_INPUT))
+        return self.forge_packet(DTCommand(PumpCommand.SelectValveInput))
 
-    def forge_valve_output_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_valve_output_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for the output from a valve on the device.
 
@@ -338,9 +380,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for the output from a valve on the device.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_VALVE_OUTPUT))
+        return self.forge_packet(DTCommand(PumpCommand.SelectValveOutput))
 
-    def forge_valve_bypass_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_valve_bypass_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for bypassing a valve on the device.
 
@@ -348,9 +390,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for bypassing a valve on the device.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_VALVE_BYPASS))
+        return self.forge_packet(DTCommand(PumpCommand.SelectValveBypass))
 
-    def forge_valve_extra_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_valve_extra_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for an extra valve.
 
@@ -358,9 +400,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for an extra valve.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_VALVE_EXTRA))
+        return self.forge_packet(DTCommand(PumpCommand.SelectValveBypass))
 
-    def forge_valve_6way_packet(self, valve_position: str) -> dtprotocol.DTInstructionPacket:
+    def forge_valve_6way_packet(self, valve_position: str) -> DTInstructionPacket:
         """
         Creates a packet for the 6way valve on the device.
 
@@ -368,9 +410,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for the input into a valve on the device.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand('{}{}'.format(CMD_VALVE_INPUT, valve_position)))
+        return self.forge_packet(DTCommand('{}{}'.format(PumpCommand.SelectValveInput, valve_position)))
 
-    def forge_report_status_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_status_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the device status.
 
@@ -378,9 +420,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device status.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_STATUS))
+        return self.forge_packet(DTCommand(PumpCommand.ReportStatus))
 
-    def forge_report_plunger_position_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_plunger_position_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the device's plunger position.
 
@@ -388,9 +430,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's plunger position.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_PLUNGER_POSITION))
+        return self.forge_packet(DTCommand(PumpCommand.ReportPlungerPosition))
 
-    def forge_report_start_velocity_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_start_velocity_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the device's start velocity.
 
@@ -398,9 +440,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's starting velocity.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_START_VELOCITY))
+        return self.forge_packet(DTCommand(PumpCommand.ReportStartVelocity))
 
-    def forge_report_peak_velocity_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_peak_velocity_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the device's peak velocity.
 
@@ -408,9 +450,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's peak velocity.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_PEAK_VELOCITY))
+        return self.forge_packet(DTCommand(PumpCommand.ReportTopVelocity))
 
-    def forge_report_cutoff_velocity_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_cutoff_velocity_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the device's cutoff velocity.
 
@@ -418,9 +460,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's cutoff velocity.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_CUTOFF_VELOCITY))
+        return self.forge_packet(DTCommand(PumpCommand.ReportCutoffVelocity))
 
-    def forge_report_valve_position_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_valve_position_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the device's valve position.
 
@@ -428,9 +470,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's valve position.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_VALVE_POSITION))
+        return self.forge_packet(DTCommand(PumpCommand.ReportValvePosition))
 
-    def forge_report_initialized_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_initialized_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the initialisation of the device.
 
@@ -438,9 +480,9 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the initialisation of the device.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_INTIALIZED))
+        return self.forge_packet(DTCommand(PumpCommand.ReportIsInitialized))
 
-    def forge_report_eeprom_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_report_eeprom_packet(self) -> DTInstructionPacket:
         """
         Creates a packet for reporting the EEPROM.
 
@@ -448,9 +490,9 @@ class PumpProtocol:
             The packet for reporting the EEPROM.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_REPORT_EEPROM))
+        return self.forge_packet(DTCommand(PumpCommand.ReportEEPROM))
 
-    def forge_terminate_packet(self) -> dtprotocol.DTInstructionPacket:
+    def forge_terminate_packet(self) -> DTInstructionPacket:
         """
         Creates the data packet for terminating the current command
 
@@ -458,4 +500,4 @@ class PumpProtocol:
             The packet for terminating any running command.
 
         """
-        return self.forge_packet(dtprotocol.DTCommand(CMD_TERMINATE))
+        return self.forge_packet(DTCommand(PumpCommand.Terminate))

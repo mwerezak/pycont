@@ -12,14 +12,15 @@ from typing import TYPE_CHECKING
 
 from .._logger import create_logger
 
-from .. import pump_protocol
-
-#: Represents the Broadcast of the C3000
-from ..dtprotocol import DTInstructionPacket, DTStatus, DTStatusDecodeError
-
-from ..config import ValvePosition, Microstep, PumpConfig, Address
+from ..config import Microstep, PumpConfig
 
 from ..io import PumpIO, PumpIOTimeOutError
+
+from ..dtprotocol import (
+    DTInstructionPacket, DTStatus, DTStatusDecodeError,
+)
+
+from ..pump_protocol import ValvePosition, Address, StatusCode, PumpProtocol, PumpStatus
 
 if TYPE_CHECKING:
     pass
@@ -35,43 +36,35 @@ MAX_REPEAT_WRITE_AND_READ = 10
 MAX_REPEAT_OPERATION = 10
 
 
-class ControllerRepeatedError(Exception):
+class MaxRetriesExceededError(Exception):
     """
     Exception for when there has been too many repeat attempts.
     """
     pass
 
 
-class PumpHWError(Exception):
+class PumpHardwareError(Exception):
     """
     Exception for when the pump encounters an hardware error.
     """
+    def __init__(self, status_code: StatusCode, pump_name: str):
+        self.status_code = status_code
+        self.pump_name = pump_name
 
-    def __init__(self, error_code='x', pump='unknown'):
+    def __str__(self) -> str:
+        message = self._ERROR_MESSAGES.get(self.status_code, "Unknown error")
+        return f"ERROR on pump {self.pump_name}: {message}"
 
-        self.pump_name = pump
-        self.error_code = error_code.lower()
-
-        print("*** ERROR on pump {} ***".format(self.pump_name))
-
-        if self.error_code == 'a':
-            print("Initialization failure!")
-        elif self.error_code == 'b':
-            print("Invalid command!")
-        elif self.error_code == 'c':
-            print("Invalid operand!")
-        elif self.error_code == 'f':
-            print("EEPROM failure!")
-        elif self.error_code == 'g':
-            print("Pump not initialized!")
-        elif self.error_code == 'i':
-            print("Plunger overload!")
-        elif self.error_code == 'j':
-            print("Valve overload!")
-        elif self.error_code == 'k':
-            print("Plunger stuck!")
-        else:
-            print("** ERROR ** Unknown error")
+    _ERROR_MESSAGES = {
+        StatusCode.InitFailure : "Initialization failure!",
+        StatusCode.InvalidCommand : "Invalid command!",
+        StatusCode.InvalidOperand : "Invalid operand!",
+        StatusCode.EEPROMFailure : "EEPROM failure!",
+        StatusCode.NotInitialized : "Pump not initialized!",
+        StatusCode.PlungerOverload : "Plunger overload!",
+        StatusCode.ValveOverload : "Valve overload!",
+        StatusCode.PlungerStuck : "Plunger stuck!",
+    }
 
 
 class PumpController(ABC):
@@ -88,13 +81,12 @@ class PumpController(ABC):
 
     """
     def __init__(self, pump_io: PumpIO, config: PumpConfig):
-        self.logger = create_logger(self.__class__.__name__)
-
         self._io = pump_io
-
         self.config = config
 
-        self._protocol = pump_protocol.PumpProtocol(self.address.value)
+        self._log = create_logger(self.__class__.__name__)
+        # self._cmd_buffer: deque[DTCommand] = deque()
+        self._protocol = PumpProtocol(self.address)
 
         self.micro_step_mode = config.micro_step_mode
         self.total_volume = float(config.total_volume)  # in ml (float)
@@ -122,6 +114,19 @@ class PumpController(ABC):
     def steps_per_ml(self) -> int:
         return int(self.number_of_steps / self.total_volume)
 
+    ## Command Execution ##
+
+    # def reset_commands(self) -> None:
+    #     """Clear the contents of the command buffer."""
+    #     self._cmd_buffer.clear()
+    #
+    # def exec_commands(self) -> None:
+    #     """Execute all commands in the command buffer, then empty it."""
+    #     self._cmd_buffer.append(DTCommand(PumpCommand.Execute))
+    #     packet = DTInstructionPacket(self.address, self._cmd_buffer)
+    #     self._cmd_buffer.clear()
+    #     self._write_and_read_from_pump(packet)
+
     def _write_and_read_from_pump(
         self, packet: DTInstructionPacket, max_repeat: int = MAX_REPEAT_WRITE_AND_READ
     ) -> DTStatus:
@@ -143,16 +148,16 @@ class PumpController(ABC):
 
         """
         for i in range(max_repeat):
-            self.logger.debug("Write and read {}/{}".format(i + 1, max_repeat))
+            self._log.debug("Write and read {}/{}".format(i + 1, max_repeat))
             try:
                 return self._io.send_packet_and_read_response(packet)
             except PumpIOTimeOutError:
-                self.logger.debug("Timeout, trying again!")
+                self._log.debug("Timeout, trying again!")
             except DTStatusDecodeError as err:
-                self.logger.debug(f"Decode error, trying again! {err}")
+                self._log.debug(f"Decode error, trying again! {err}")
 
-        self.logger.warning("Failed to communicate, maximum number of retries exceeded!")
-        raise ControllerRepeatedError('Repeated Error from pump {}'.format(self.name))
+        self._log.warning("Failed to communicate, maximum number of retries exceeded!")
+        raise MaxRetriesExceededError('Repeated Error from pump {}'.format(self.name))
 
     def volume_to_step(self, volume_in_ml: float) -> int:
         """
@@ -196,17 +201,15 @@ class PumpController(ABC):
         report_status_packet = self._protocol.forge_report_status_packet()
         response = self._write_and_read_from_pump(report_status_packet)
 
-        status = response.status
-        if status == pump_protocol.STATUS_IDLE_ERROR_FREE:
-            return True
-        elif status == pump_protocol.STATUS_BUSY_ERROR_FREE:
-            return False
-        elif status in pump_protocol.ERROR_STATUSES_BUSY:
-            raise PumpHWError(error_code=status, pump=self.name)
-        elif status in pump_protocol.ERROR_STATUSES_IDLE:
-            raise PumpHWError(error_code=status, pump=self.name)
-        else:
-            raise ValueError('The pump replied status {}, Not handled'.format(status))
+        status = PumpStatus.try_decode(response.status)
+        if status is None:
+            raise ValueError(f"The pump replied status {response.status!r}, could not decode")
+
+        if status.is_error():
+            raise PumpHardwareError(status.code, self.name)
+
+        return not status.busy
+
 
     def is_busy(self) -> bool:
         """
@@ -277,7 +280,6 @@ class PumpController(ABC):
             valve_position = self.config.initialize_valve_position
 
         for _ in range(max_repeat):
-
             self.initialize_valve_only()
             self.set_valve_position(valve_position, secure=secure)
             self.initialize_no_valve()
@@ -285,8 +287,8 @@ class PumpController(ABC):
             if self.is_initialized():
                 return True
 
-        self.logger.debug("Too many failed attempts to initialize!")
-        raise ControllerRepeatedError('Repeated Error from pump {}'.format(self.name))
+        self._log.debug("Too many failed attempts to initialize!")
+        raise MaxRetriesExceededError('Repeated Error from pump {}'.format(self.name))
 
     def initialize_valve_right(self, operand_value: int = 0, wait: bool = True) -> None:
         """
@@ -452,15 +454,15 @@ class PumpController(ABC):
             if self.get_top_velocity() == top_velocity:
                 return True
             else:
-                self.logger.debug("Top velocity not set, change attempt {}/{}".format(i + 1, max_repeat))
+                self._log.debug("Top velocity not set, change attempt {}/{}".format(i + 1, max_repeat))
             self.check_top_velocity_within_range(top_velocity)
             self._write_and_read_from_pump(self._protocol.forge_top_velocity_packet(top_velocity))
             # if do not want to wait and check things went well, return now
             if secure is False:
                 return True
 
-        self.logger.debug(f"[PUMP {self.name}] Too many failed attempts in set_top_velocity!")
-        raise ControllerRepeatedError(f'Repeated Error from pump {self.name}')
+        self._log.debug(f"[PUMP {self.name}] Too many failed attempts in set_top_velocity!")
+        raise MaxRetriesExceededError(f'Repeated Error from pump {self.name}')
 
     def get_top_velocity(self) -> int:
         """
@@ -781,7 +783,7 @@ class PumpController(ABC):
             valve_position = ValvePosition.try_decode(raw_valve_position)
             if valve_position is not None:
                 return valve_position
-            self.logger.debug(f"Valve position request failed attempt {i+1}/{max_repeat}, {raw_valve_position} unknown")
+            self._log.debug(f"Valve position request failed attempt {i+1}/{max_repeat}, {raw_valve_position} unknown")
         raise ValueError(f'Valve position received was {raw_valve_position}. It is unknown')
 
     def set_valve_position(self, valve_position: ValvePosition, max_repeat: int = MAX_REPEAT_OPERATION, secure: bool = True) -> bool:
@@ -809,7 +811,7 @@ class PumpController(ABC):
             if self.get_valve_position() == valve_position:
                 return True
             else:
-                self.logger.debug("Valve not in position, change attempt {}/{}".format(i + 1, max_repeat))
+                self._log.debug("Valve not in position, change attempt {}/{}".format(i + 1, max_repeat))
 
             if valve_position == ValvePosition.Input:
                 valve_position_packet = self._protocol.forge_valve_input_packet()
@@ -832,8 +834,8 @@ class PumpController(ABC):
 
             self.wait_until_idle()
 
-        self.logger.debug("[PUMP {}] Too many failed attempts in set_valve_position!".format(self.name))
-        raise ControllerRepeatedError('Repeated Error from pump {}'.format(self.name))
+        self._log.debug("[PUMP {}] Too many failed attempts in set_valve_position!".format(self.name))
+        raise MaxRetriesExceededError('Repeated Error from pump {}'.format(self.name))
 
     def set_eeprom_config(self, operand_value: int) -> None:
         """

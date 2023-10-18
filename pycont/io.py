@@ -173,7 +173,7 @@ class SerialIO(PumpIO):
         .. note:: Unsure if this is the correct packet type (GAK).
 
         """
-        bytes_to_send = packet.to_string()
+        bytes_to_send = packet.to_bytes()
         self._log.debug(f"Sending {bytes_to_send!r}")
         self._serial.write(bytes_to_send)
 
@@ -262,7 +262,7 @@ class SocketIO(PumpIO):
             self._send_packet(packet)
 
     def _send_packet(self, packet: DTInstructionPacket) -> None:
-        bytes_to_send = packet.to_string()
+        bytes_to_send = packet.to_bytes()
         self._log.debug(f"Sending {bytes_to_send!r}")
         self.socket.sendall(bytes_to_send)
 
