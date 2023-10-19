@@ -402,7 +402,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for an extra valve.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.SelectValveBypass))
+        return self.forge_packet(DTCommand(PumpCommand.SelectValveExtra))
 
     def forge_valve_6way_packet(self, valve_position: str) -> DTInstructionPacket:
         """
