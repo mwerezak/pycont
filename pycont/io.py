@@ -303,7 +303,7 @@ class SocketIO(PumpIO):
         self._buf += data
 
         while (response := self._extract_next_response_from_buffer(self._buf)) is not None:
-            if response.address == Address.Master.value:
+            if response.address == Address.Master:
                 return response
 
         return None
