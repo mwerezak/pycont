@@ -186,8 +186,7 @@ class PumpProtocol:
 
         """
         self._log.debug("Forging packet with {} and execute set to {}".format(dtcommands, execute))
-        if isinstance(dtcommands, DTCommand):
-            dtcommands = [dtcommands]
+        dtcommands = list(dtcommands)
         if execute:
             dtcommands.append(DTCommand(PumpCommand.Execute))
         return DTInstructionPacket(self.address, dtcommands)
