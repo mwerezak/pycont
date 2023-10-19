@@ -145,9 +145,12 @@ class ValvePosition(Enum):
 
     @classmethod
     def try_decode(cls, raw_pos: str) -> Optional[ValvePosition]:
-        if raw_pos in cls.__members__ .values():
-            return cls(raw_pos)
-        return None
+        return _VALVE_POS_DECODE.get(raw_pos)
+
+_VALVE_POS_DECODE = {
+    valve_pos.value : valve_pos
+    for valve_pos in ValvePosition
+}
 
 #: 6 way valve
 _VALVE_6WAY_LIST = (
