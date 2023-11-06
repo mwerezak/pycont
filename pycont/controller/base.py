@@ -156,6 +156,8 @@ class PumpController(ABC):
             except DTStatusDecodeError as err:
                 self._log.debug(f"Decode error, trying again! {err}")
 
+            time.sleep(0.2)
+
         self._log.warning("Failed to communicate, maximum number of retries exceeded!")
         raise MaxRetriesExceededError('Repeated Error from pump {}'.format(self.name))
 
