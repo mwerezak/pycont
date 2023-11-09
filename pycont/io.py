@@ -94,7 +94,7 @@ class SerialIO(PumpIO):
         self.timeout = timeout
 
         self._log = create_logger(self.__class__.__name__)
-        self._lock = threading.Lock
+        self._lock = threading.Lock()
 
         self.open()
 
