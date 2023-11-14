@@ -88,7 +88,7 @@ class PumpController(ABC):
         # self._cmd_buffer: deque[DTCommand] = deque()
         self._protocol = PumpProtocol(self.address)
 
-        self.micro_step_mode = config.micro_step_mode
+        self.micro_step_mode = None
         self.total_volume = float(config.total_volume)  # in ml (float)
         self.default_top_velocity = config.top_velocity
 
@@ -363,7 +363,7 @@ class PumpController(ABC):
             secure (bool): Ensures that everything is correct, default set to True.
 
         """
-        self.set_microstep_mode(self.micro_step_mode)
+        self.set_microstep_mode(self.config.micro_step_mode)
         self.wait_until_idle()  # just in case, but should not be needed
 
         self.set_top_velocity(self.default_top_velocity, secure=secure)
@@ -377,6 +377,9 @@ class PumpController(ABC):
             micro_step_mode: Mode to use.
 
         """
+        if self.micro_step_mode is not None and self.micro_step_mode == micro_step_mode:
+            return
+
         self.micro_step_mode = micro_step_mode
         self._write_and_read_from_pump(self._protocol.forge_microstep_mode_packet(micro_step_mode.value))
 
