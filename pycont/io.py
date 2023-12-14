@@ -43,6 +43,8 @@ class PumpIOTimeOutError(Exception):
 
 
 class PumpIO(ABC):
+    default_poll_interval = 0.1
+
     @abstractmethod
     def send_packet(self, packet: DTInstructionPacket) -> None:
         """Send a packet without waiting for the response. Any response will be discarded."""

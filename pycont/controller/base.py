@@ -23,7 +23,7 @@ from ..dtprotocol import (
 from ..pump_protocol import ValvePosition, Address, StatusCode, PumpProtocol, PumpStatus
 
 if TYPE_CHECKING:
-    pass
+    from typing import Optional
 
 
 #: Specifies a time to wait
@@ -228,10 +228,13 @@ class PumpController(ABC):
         """
         return not self.is_idle()
 
-    def wait_until_idle(self, *, poll_interval: float = 0.1) -> None:
+    def wait_until_idle(self, *, poll_interval: Optional[float] = None) -> None:
         """
         Waits until the pump is not busy for WAIT_SLEEP_TIME, default set to 0.1
         """
+        if poll_interval is None:
+            poll_interval = self._io.default_poll_interval
+
         while self.is_busy():
             time.sleep(poll_interval)
 
