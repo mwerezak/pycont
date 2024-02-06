@@ -271,7 +271,7 @@ class SocketIO(PumpIO):
     # why didn't they just use bytes?
     _dtstart = DTStart.encode()
     _dtstop = DTStop.encode()
-    def _extract_next_response_from_buffer(self, buf: bytearray) -> Optional[DTStatus]:
+    def _extract_next_response_from_buffer(self, buf: bytearray) -> Optional[bytes]:
         start_idx = buf.find(self._dtstart)
         if start_idx < 0:
             buf.clear()
@@ -282,9 +282,9 @@ class SocketIO(PumpIO):
             return None
 
         split_idx = stop_idx + len(self._dtstop)
-        response = buf[start_idx:split_idx]
+        response = bytes(buf[start_idx:split_idx])
         del buf[:split_idx]
-        return DTStatus(response)
+        return response
 
 
     def _recv(self) -> Optional[bytes]:
@@ -304,8 +304,10 @@ class SocketIO(PumpIO):
 
         self._buf += data
 
-        while (response := self._extract_next_response_from_buffer(self._buf)) is not None:
+        while (msg := self._extract_next_response_from_buffer(self._buf)) is not None:
+            response = DTStatus(msg)
             if response.address == Address.Master:
+                self._log.debug(F"Received {msg!r}")
                 return response
 
         return None
