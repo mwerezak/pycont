@@ -229,16 +229,19 @@ class SocketIO(PumpIO):
     Pump I/O communication over a socket-serial bridge.
 
     Not thread safe. If you need multiple threads then use a separate socket for each thread.
+
+    Can accept an external lock in case access needs to be synchronized between multiple processes.
+    Defaults to a new threading.Lock instance.
     """
 
-    def __init__(self, sock: socket.socket, timeout: float = DEFAULT_IO_TIMEOUT):
+    def __init__(self, sock: socket.socket, timeout: float = DEFAULT_IO_TIMEOUT, *, lock: Any = None):
         self.socket = sock
         self.timeout = timeout
 
         # use socket in nonblocking mode
         self.socket.settimeout(0)
 
-        self._lock = threading.Lock()
+        self._lock = lock if lock is not None else threading.Lock()
         self._buf = bytearray()
         self._log = create_logger(self.__class__.__name__)
 
