@@ -245,23 +245,6 @@ class SocketIO(PumpIO):
         self._buf = bytearray()
         self._log = create_logger(self.__class__.__name__)
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def close(self) -> None:
-        self.socket.close()
-
-    def is_connected(self) -> bool:
-        try:
-            self.socket.send(b'')
-        except:
-            return False
-        else:
-            return True
-
-    def __bool__(self) -> bool:
-        return self.is_connected()
-
     def send_packet(self, packet: DTInstructionPacket) -> None:
         with self._lock:
             self._send_packet(packet)
