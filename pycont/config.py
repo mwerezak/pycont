@@ -40,7 +40,7 @@ class PumpConfig:
     total_volume: Total volume of the pump.
     micro_step_mode: The mode which the microstep will use, default set to MICRO_STEP_MODE_2 (2)
     top_velocity: The top velocity of the pump, default set to 6000
-    initialize_valve_position: Sets the valve position, default set to VALVE_INPUT ('I')
+    init_valve_pos: Sets the valve position, default set to VALVE_INPUT ('I')
     """
 
     name: str
@@ -49,7 +49,7 @@ class PumpConfig:
     total_volume: float
     micro_step_mode: Microstep = Microstep.Mode2
     top_velocity: int = 6000
-    initialize_valve_position: ValvePosition = ValvePosition.Input
+    init_valve_pos: ValvePosition = ValvePosition.Input
 
     @classmethod
     def from_dict(cls, pump_name: str, pump_config: dict) -> PumpConfig:

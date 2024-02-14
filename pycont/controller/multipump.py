@@ -229,7 +229,7 @@ class MultiPumpController(object):
 
         for pump in list(self.pumps.values()):
             if not pump.is_initialized():
-                pump.set_valve_position(pump.config.initialize_valve_position, secure=secure)
+                pump.set_valve_position(pump.config.init_valve_pos, secure=secure)
         self.wait_until_all_pumps_idle()
 
         for pump in list(self.pumps.values()):

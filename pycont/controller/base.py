@@ -282,7 +282,7 @@ class PumpController(ABC):
 
         """
         if valve_position is None:
-            valve_position = self.config.initialize_valve_position
+            valve_position = self.config.init_valve_pos
 
         for _ in range(max_repeat):
             self.initialize_valve_only()
