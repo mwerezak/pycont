@@ -64,7 +64,7 @@ class PumpCommand(Enum):
     #: Command for the reporting the status
     ReportStatus = 'Q'
     #: Command for reporting hte plunger position
-    ReportPlungerPosition = '?'
+    ReportPlungerPosition = '?0'
     #: Command for reporting the start velocity
     ReportStartVelocity = '?1'
     #: Command for reporting the peak velocity
@@ -422,7 +422,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device status.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportStatus))
+        return self.forge_packet(DTCommand(PumpCommand.ReportStatus), execute=False)
 
     def forge_report_plunger_position_packet(self) -> DTInstructionPacket:
         """
@@ -432,7 +432,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's plunger position.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportPlungerPosition))
+        return self.forge_packet(DTCommand(PumpCommand.ReportPlungerPosition), execute=False)
 
     def forge_report_start_velocity_packet(self) -> DTInstructionPacket:
         """
@@ -442,7 +442,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's starting velocity.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportStartVelocity))
+        return self.forge_packet(DTCommand(PumpCommand.ReportStartVelocity), execute=False)
 
     def forge_report_peak_velocity_packet(self) -> DTInstructionPacket:
         """
@@ -452,7 +452,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's peak velocity.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportTopVelocity))
+        return self.forge_packet(DTCommand(PumpCommand.ReportTopVelocity), execute=False)
 
     def forge_report_cutoff_velocity_packet(self) -> DTInstructionPacket:
         """
@@ -462,7 +462,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's cutoff velocity.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportCutoffVelocity))
+        return self.forge_packet(DTCommand(PumpCommand.ReportCutoffVelocity), execute=False)
 
     def forge_report_valve_position_packet(self) -> DTInstructionPacket:
         """
@@ -472,7 +472,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the device's valve position.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportValvePosition))
+        return self.forge_packet(DTCommand(PumpCommand.ReportValvePosition), execute=False)
 
     def forge_report_initialized_packet(self) -> DTInstructionPacket:
         """
@@ -482,7 +482,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for reporting the initialisation of the device.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportIsInitialized))
+        return self.forge_packet(DTCommand(PumpCommand.ReportIsInitialized), execute=False)
 
     def forge_report_eeprom_packet(self) -> DTInstructionPacket:
         """
@@ -492,7 +492,7 @@ class PumpProtocol:
             The packet for reporting the EEPROM.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.ReportEEPROM))
+        return self.forge_packet(DTCommand(PumpCommand.ReportEEPROM), execute=False)
 
     def forge_terminate_packet(self) -> DTInstructionPacket:
         """
@@ -502,4 +502,4 @@ class PumpProtocol:
             The packet for terminating any running command.
 
         """
-        return self.forge_packet(DTCommand(PumpCommand.Terminate))
+        return self.forge_packet(DTCommand(PumpCommand.Terminate), execute=False)
