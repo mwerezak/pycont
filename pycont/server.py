@@ -12,32 +12,38 @@ from typing import TYPE_CHECKING, TypeVar
 from .io import PumpIO
 
 if TYPE_CHECKING:
-    from typing import Any, Type
+    from typing import Any, Type, Callable
     from collections.abc import Iterable
 
 
 _log = logging.getLogger(__name__)
 
 
+def _make_proxy_method(name: str) -> Callable:
+    def method(self, /, *args, **kwargs):
+        return self._callmethod(name, args, kwargs)
+    method.__name__ = name
+    return method
+
+def _make_proxy_property(name: str) -> property:
+    def prop_get(self, /):
+        return self._callmethod('__getattribute__', [name])
+
+    def prop_set(self, /, value):
+        return self._callmethod('__setattr__', [name, value])
+
+    prop_get.__name__ = name
+    prop_set.__name__ = name
+    return property(prop_get, prop_set)
+
 def _make_proxy(name: str, methods: Iterable[str], properties: Iterable[str]) -> Type:
     class_dict = {}
 
     for method_name in methods:
-        def _method(self, /, *args, **kwargs):
-            return self._callmethod(method_name, args, kwargs)
-        _method.__name__ = method_name
-        class_dict[method_name] = _method
+        class_dict[method_name] = _make_proxy_method(method_name)
 
     for prop_name in properties:
-        def _prop_get(self, /):
-            return self._callmethod('__getattribute__', [prop_name])
-
-        def _prop_set(self, /, value):
-            return self._callmethod('__setattr__', [prop_name, value])
-
-        _prop_get.__name__ = prop_name
-        _prop_set.__name__ = prop_name
-        class_dict[prop_name] = property(_prop_get, _prop_set)
+        class_dict[prop_name] = _make_proxy_property(prop_name)
 
     exposed = (
         '__getattribute__', '__setattr__', *class_dict.keys()
