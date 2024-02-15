@@ -412,7 +412,7 @@ class PumpProtocol:
             DTInstructionPacket: The packet created for the input into a valve on the device.
 
         """
-        return self.forge_packet(DTCommand('{}{}'.format(PumpCommand.SelectValveInput, valve_position)))
+        return self.forge_packet(DTCommand(PumpCommand.SelectValveInput, valve_position))
 
     def forge_report_status_packet(self) -> DTInstructionPacket:
         """

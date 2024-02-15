@@ -148,7 +148,7 @@ class PumpController(ABC):
 
         """
         for i in range(max_repeat):
-            self._log.debug("Write and read {}/{}".format(i + 1, max_repeat))
+            self._log.debug("Write and read {}/{}: {}".format(i + 1, max_repeat, packet))
             try:
                 return self._io.send_packet_and_read_response(packet)
             except PumpIOTimeOutError:

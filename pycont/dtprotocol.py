@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from ._logger import create_logger
 
 if TYPE_CHECKING:
-    from typing import Union, Optional
+    from typing import Optional
     from collections.abc import Iterable
     from .pump_protocol import PumpCommand
 
@@ -71,25 +71,23 @@ class DTCommand(object):
         Args:
             command: The command to be sent
 
-            operand: The parameter of the command, None by default
+            operand: The parameter of the command
 
         (for more details see http://www.tricontinent.com/products/cseries-syringe-pumps)
         """
 
-    def __init__(self, command: Union[str, PumpCommand], operand: str = ''):
-        # temporary hack until 6-way support is added to PumpCommand
-        command = getattr(command, 'value', command)
-        self.command = command.encode()
+    def __init__(self, command: PumpCommand, operand: str = ''):
+        self.command = command
         self.operand = operand.encode()
 
     def to_array(self) -> bytearray:
-        return bytearray(itertools.chain(self.command, self.operand))
+        return bytearray(itertools.chain(self.command.value.encode(), self.operand))
 
     def to_bytes(self) -> bytes:
-        return bytes(itertools.chain(self.command, self.operand))
+        return bytes(itertools.chain(self.command.value.encode(), self.operand))
 
     def __str__(self):
-        return "command: " + str(self.command.decode()) + " operand: " + str(self.operand)
+        return self.command.name
 
 
 class DTInstructionPacket:
@@ -104,13 +102,16 @@ class DTInstructionPacket:
         """
 
     def __init__(self, address: Address, dtcommands: Iterable[DTCommand]):
-        self.address = address.value.encode()
+        self.address = address
         self.dtcommands = tuple(dtcommands)
+
+    def __str__(self) -> str:
+        return f"[{self.address.name}: {', '.join(str(cmd) for cmd in self.dtcommands)}]"
 
     def to_array(self) -> bytearray:
         return bytearray(itertools.chain(
             DTStart.encode(),
-            self.address,
+            self.address.value.encode(),
             *(dtcommand.to_bytes() for dtcommand in self.dtcommands),
             DTStop.encode(),
         ))
