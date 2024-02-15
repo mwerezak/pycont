@@ -9,49 +9,32 @@ import logging
 from multiprocessing.managers import BaseManager, BaseProxy
 from typing import TYPE_CHECKING, TypeVar
 
+from .dtprotocol import DTInstructionPacket, DTStatus
 from .io import PumpIO
 
 if TYPE_CHECKING:
-    from typing import Any, Type, Callable
-    from collections.abc import Iterable
+    from typing import Any, Type
 
 
 _log = logging.getLogger(__name__)
 
 
-def _make_proxy_method(name: str) -> Callable:
-    def method(self, /, *args, **kwargs):
-        return self._callmethod(name, args, kwargs)
-    method.__name__ = name
-    return method
-
-def _make_proxy_property(name: str) -> property:
-    def prop_get(self, /):
-        return self._callmethod('__getattribute__', [name])
-
-    def prop_set(self, /, value):
-        return self._callmethod('__setattr__', [name, value])
-
-    prop_get.__name__ = name
-    prop_set.__name__ = name
-    return property(prop_get, prop_set)
-
-def _make_proxy(name: str, methods: Iterable[str], properties: Iterable[str]) -> Type:
-    class_dict = {}
-
-    for method_name in methods:
-        class_dict[method_name] = _make_proxy_method(method_name)
-
-    for prop_name in properties:
-        class_dict[prop_name] = _make_proxy_property(prop_name)
-
-    exposed = (
-        '__getattribute__', '__setattr__', *class_dict.keys()
+class _PumpIOProxy(BaseProxy, PumpIO):
+    _exposed_ = (
+        '__getattribute__',
+        'send_packet',
+        'send_packet_and_read_response',
     )
 
-    Proxy = type(name, (BaseProxy,), class_dict)
-    Proxy._exposed_ = exposed
-    return Proxy
+    def send_packet(self, packet: DTInstructionPacket) -> None:
+        self._callmethod('send_packet', (packet,))
+
+    def send_packet_and_read_response(self, packet: DTInstructionPacket) -> DTStatus:
+        return self._callmethod('send_packet_and_read_response', (packet,))
+
+    @property
+    def default_poll_interval(self) -> float:
+        return self._callmethod('__getattribute__', ('default_poll_interval',))
 
 
 class PumpServer:
@@ -69,18 +52,7 @@ class PumpServer:
         if hasattr(cls, proxy_name):
             raise ValueError(f"{io_type} is already registered or is using an invalid name")
 
-        proxy_type = _make_proxy(
-            f'{cls.__name__}.{proxy_name}',
-            methods = (
-                'send_packet',
-                'send_packet_and_read_response',
-            ),
-            properties = (
-                'default_poll_interval',
-            ),
-        )
-        setattr(cls, proxy_name, proxy_type)
-        cls._PumpManager.register(io_name, io_type, proxytype=proxy_type)
+        cls._PumpManager.register(io_name, io_type, proxytype=_PumpIOProxy)
 
 
     def __init__(self) -> None:
