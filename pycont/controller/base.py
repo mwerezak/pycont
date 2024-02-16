@@ -592,9 +592,7 @@ class PumpController(ABC):
             if from_valve is not None:
                 self.set_valve_position(from_valve, secure=secure)
 
-            steps_to_pump = self.volume_to_step(volume_in_ml)
-            packet = self._protocol.forge_pump_packet(steps_to_pump)
-            self._write_and_read_from_pump(packet)
+            self.pickup_move(volume_in_ml)
 
             if wait:
                 self.wait_until_idle()
@@ -602,6 +600,11 @@ class PumpController(ABC):
             return True
         else:
             return False
+
+    def pickup_move(self, volume_in_ml: float) -> None:
+        steps_to_pump = self.volume_to_step(volume_in_ml)
+        packet = self._protocol.forge_pump_packet(steps_to_pump)
+        self._write_and_read_from_pump(packet)
 
     def is_volume_deliverable(self, volume_in_ml: float) -> bool:
         """
@@ -651,9 +654,7 @@ class PumpController(ABC):
             if to_valve is not None:
                 self.set_valve_position(to_valve, secure=secure)
 
-            steps_to_deliver = self.volume_to_step(volume_in_ml)
-            packet = self._protocol.forge_deliver_packet(steps_to_deliver)
-            self._write_and_read_from_pump(packet)
+            self.deliver_move(volume_in_ml)
 
             if wait:
                 self.wait_until_idle()
@@ -661,6 +662,11 @@ class PumpController(ABC):
             return True
         else:
             return False
+
+    def deliver_move(self, volume_in_ml: float) -> None:
+        steps_to_deliver = self.volume_to_step(volume_in_ml)
+        packet = self._protocol.forge_deliver_packet(steps_to_deliver)
+        self._write_and_read_from_pump(packet)
 
     def transfer(self, volume_in_ml: float, from_valve: ValvePosition, to_valve: ValvePosition, speed_in: int = None,
                  speed_out: int = None) -> None:
