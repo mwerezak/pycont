@@ -19,6 +19,21 @@ if TYPE_CHECKING:
     from .controller import PumpController
 
 
+# Valve set configuration
+class ValveSet(Enum):
+    ThreePortY        = '3P-Y'
+    FourPort90        = '4P-90'
+    ThreeWayDistLarge = '3WD-LD'
+    ThreeWayDist      = '3WD'
+    ThreeWayDistIOE   = '3WD-IOE'
+    TValve90          = 'T-90'
+    SixWayDist        = '6WD'
+    FourPortLoop      = 'LOOP'
+
+    def __str__(self) -> str:
+        return self.value
+
+
 class Microstep(Enum):
     Mode0 = 0
     Mode2 = 2

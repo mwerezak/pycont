@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 from .._logger import create_logger
 
-from ..config import Microstep, PumpConfig
+from ..config import Microstep, PumpConfig, ValveSet
 
 from ..io import PumpIO, PumpIOTimeOutError
 
@@ -24,6 +24,7 @@ from ..pump_protocol import ValvePosition, Address, StatusCode, PumpProtocol, Pu
 
 if TYPE_CHECKING:
     from typing import Optional
+    from collections.abc import Mapping
 
 
 #: Specifies a time to wait
@@ -108,6 +109,11 @@ class PumpController(ABC):
     @property
     @abstractmethod
     def number_of_steps(self) -> int:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def valve_set_config(self) -> Mapping[ValveSet, int]:
         raise NotImplementedError
 
     @property
@@ -872,6 +878,19 @@ class PumpController(ABC):
             print("Unpower and repower the pump to make changes active!")
             print("####################################################")
 
+    def set_eeprom_valve_set(self, valve_set: ValveSet) -> None:
+        """
+        Sets the EEPROM config of the pump to use the valve type specified by a ValveSet enumeration value,
+        if the pump model supports it.
+
+        Raises:
+            ValueError: If the pump model does not support the given valve set.
+        """
+        operand_value = self.valve_set_config.get(valve_set)
+        if operand_value is None:
+            raise ValueError(f"valve set {valve_set} is not supported by this pump")
+        self.set_eeprom_config(operand_value)
+
     def set_eeprom_lowlevel_config(self, command: int, operand: str) -> None:
         """
         Sets the configuration of the EEPROM on the pumps.
@@ -883,33 +902,6 @@ class PumpController(ABC):
         """
         eeprom_packet = self._protocol.forge_eeprom_lowlevel_config_packet(sub_command=command, operand_value=operand)
         self._write_and_read_from_pump(eeprom_packet)
-
-    def flash_eeprom_3_way_y_valve(self) -> None:
-        """
-        Sets the EEPROM config of the pump to use a 3-way Y valve (I/O operations)
-        Requires switching of the jumper pin on the back of the pump from the top set of pins to the bottom.
-        """
-        self.set_eeprom_config(1)
-
-    def flash_eeprom_3_way_t_valve(self) -> None:
-        """
-        Sets the EEPROM config of the pump to use a 3-way T valve (I/O operations)
-        """
-        self.set_eeprom_config(5)
-
-    def flash_eeprom_4_way_nondist_valve(self) -> None:
-        """
-        Sets the EEPROM config of the pump to use a 4-way Non-Dist valve (I/O/E operations)
-        Note in this configuration it is not possible to pump to E!
-        valve position E connects E with O while B connects E and I (90-degrees)
-        """
-        self.set_eeprom_config(2)
-
-    def flash_eeprom_4_way_dist_valve(self) -> None:
-        """
-        Sets the EEPROM config of the pump to use a 4-way Dist Valve (I/O/E operations)
-        """
-        self.set_eeprom_config(4)
 
     def get_eeprom_config(self) -> str:
         """
