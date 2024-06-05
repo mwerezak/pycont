@@ -153,8 +153,9 @@ class PumpController(ABC):
             ControllerRepeatedError: Error in decoding.
 
         """
-        for i in range(max_repeat):
-            self._log.debug("Write and read {}/{}: {}".format(i + 1, max_repeat, packet))
+        for retry in range(max_repeat):
+            self._log.debug(f"Write and read{f' (retry {retry}/{max_repeat-1})' if retry > 0 else ''}: {packet}")
+
             try:
                 return self._io.send_packet_and_read_response(packet)
             except PumpIOTimeOutError:
@@ -823,12 +824,12 @@ class PumpController(ABC):
             ControllerRepeatedError: Too many failed attempts in set_valve_position.
 
         """
-        for i in range(max_repeat):
+        for retry in range(max_repeat):
 
             if self.get_valve_position() == valve_position:
                 return True
-            else:
-                self._log.debug("Valve not in position, change attempt {}/{}".format(i + 1, max_repeat))
+            elif retry > 0:
+                self._log.debug("Valve not in position, retry {}/{}".format(retry, max_repeat - 1))
 
             if valve_position == ValvePosition.Input:
                 valve_position_packet = self._protocol.forge_valve_input_packet()
